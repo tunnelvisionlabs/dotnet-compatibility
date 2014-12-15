@@ -98,6 +98,36 @@
                 }
 
                 // check fields
+                foreach (var fieldDefinition in typeDefinition.GetFields().Select(referenceMetadata.GetFieldDefinition))
+                {
+                    if (!IsPubliclyVisible(referenceMetadata, fieldDefinition))
+                        continue;
+
+                    string referenceName = referenceMetadata.GetString(fieldDefinition.Name);
+
+                    FieldDefinitionHandle newFieldDefinitionHandle = default(FieldDefinitionHandle);
+                    foreach (var fieldDefinitionHandle in newTypeDefinition.GetFields())
+                    {
+                        string newName = newMetadata.GetString(newMetadata.GetFieldDefinition(fieldDefinitionHandle).Name);
+                        if (string.Equals(referenceName, newName, StringComparison.Ordinal))
+                        {
+                            newFieldDefinitionHandle = fieldDefinitionHandle;
+                            break;
+                        }
+                    }
+
+                    if (newFieldDefinitionHandle.IsNil)
+                        throw new NotImplementedException(string.Format("Publicly-visible field '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, fieldDefinition)));
+
+                    FieldDefinition newFieldDefinition = newMetadata.GetFieldDefinition(newFieldDefinitionHandle);
+                    if (fieldDefinition.Attributes != newFieldDefinition.Attributes)
+                        throw new NotImplementedException("Attributes of publicly-visible field changed.");
+
+                    BlobReader referenceSignatureReader = referenceMetadata.GetBlobReader(fieldDefinition.Signature);
+                    BlobReader newSignatureReader = newMetadata.GetBlobReader(newFieldDefinition.Signature);
+                    if (!IsSameFieldSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                        throw new NotImplementedException("Signature of publicly-visible field changed.");
+                }
 
                 // check methods
 
@@ -105,6 +135,31 @@
 
                 // check properties
             }
+        }
+
+        private string GetMetadataName(MetadataReader metadataReader, TypeDefinition typeDefinition)
+        {
+            if (typeDefinition.GetDeclaringType().IsNil)
+            {
+                string namespaceName = metadataReader.GetString(typeDefinition.Namespace);
+                string typeName = metadataReader.GetString(typeDefinition.Name);
+                return string.Format("{0}.{1}", namespaceName, typeName);
+            }
+            else
+            {
+                TypeDefinition declaringTypeDefinition = metadataReader.GetTypeDefinition(typeDefinition.GetDeclaringType());
+                string declaringTypeName = GetMetadataName(metadataReader, declaringTypeDefinition);
+                string name = metadataReader.GetString(typeDefinition.Name);
+                return string.Format("{0}+{1}", declaringTypeName, name);
+            }
+        }
+
+        private string GetMetadataName(MetadataReader metadataReader, FieldDefinition fieldDefinition)
+        {
+            TypeDefinition declaringTypeDefinition = metadataReader.GetTypeDefinition(fieldDefinition.GetDeclaringType());
+            string typeName = GetMetadataName(metadataReader, declaringTypeDefinition);
+            string fieldName = metadataReader.GetString(fieldDefinition.Name);
+            return string.Format("{0}.{1}", typeName, fieldName);
         }
 
         private void CheckBaseType(MetadataReader referenceMetadata, MetadataReader newMetadata, TypeDefinition referenceBaseTypeDefinition, TypeDefinitionHandle newBaseTypeDefinitionHandle)
@@ -239,6 +294,18 @@
             default:
                 return false;
             }
+        }
+
+        private bool IsSameFieldSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
+        {
+            SignatureHeader referenceHeader = referenceSignatureReader.ReadSignatureHeader();
+            SignatureHeader newHeader = newSignatureReader.ReadSignatureHeader();
+            if (referenceHeader.Kind != SignatureKind.Field || newHeader.Kind != SignatureKind.Field)
+                throw new InvalidOperationException("Expected field signatures.");
+
+            SkipCustomModifiers(ref referenceSignatureReader);
+            SkipCustomModifiers(ref newSignatureReader);
+            return IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader);
         }
 
         private bool IsSameTypeSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
@@ -478,6 +545,33 @@
             default:
                 return false;
             }
+        }
+
+        private bool IsPubliclyVisible(MetadataReader referenceMetadata, FieldDefinition fieldDefinition, bool checkDeclaringType = false)
+        {
+            switch (fieldDefinition.Attributes & FieldAttributes.FieldAccessMask)
+            {
+            case FieldAttributes.Public:
+            case FieldAttributes.Family:
+            case FieldAttributes.FamORAssem:
+                break;
+
+            case FieldAttributes.FamANDAssem:
+            case FieldAttributes.Assembly:
+            case FieldAttributes.Private:
+            case FieldAttributes.PrivateScope:
+            default:
+                return false;
+            }
+
+            if (checkDeclaringType)
+            {
+                TypeDefinition declaringTypeDefinition = referenceMetadata.GetTypeDefinition(fieldDefinition.GetDeclaringType());
+                if (!IsPubliclyVisible(referenceMetadata, declaringTypeDefinition))
+                    return false;
+            }
+
+            return true;
         }
 
         private bool IsMarkedPreliminary(MetadataReader metadataReader, TypeDefinition typeDefinition)
