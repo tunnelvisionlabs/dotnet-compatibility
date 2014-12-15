@@ -1,6 +1,7 @@
 ﻿namespace CompatibilityChecker
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using System.Reflection.Metadata;
@@ -130,6 +131,52 @@
                 }
 
                 // check methods
+                foreach (var methodDefinition in typeDefinition.GetMethods().Select(referenceMetadata.GetMethodDefinition))
+                {
+                    if (!IsPubliclyVisible(referenceMetadata, methodDefinition))
+                        continue;
+
+                    string referenceName = referenceMetadata.GetString(methodDefinition.Name);
+
+                    List<MethodDefinition> newMethodDefinitions = new List<MethodDefinition>();
+                    foreach (var newMethodDefinition in newTypeDefinition.GetMethods().Select(newMetadata.GetMethodDefinition))
+                    {
+                        string newName = newMetadata.GetString(newMethodDefinition.Name);
+                        if (!string.Equals(referenceName, newName, StringComparison.Ordinal))
+                            continue;
+
+                        // filter on number of generic parameters
+                        if (methodDefinition.GetGenericParameters().Count != newMethodDefinition.GetGenericParameters().Count)
+                            continue;
+
+                        // filter on number of parameters
+                        if (methodDefinition.GetParameters().Count != newMethodDefinition.GetParameters().Count)
+                            continue;
+
+                        newMethodDefinitions.Add(newMethodDefinition);
+                    }
+
+                    if (newMethodDefinitions.Count == 0)
+                        throw new NotImplementedException(string.Format("Publicly-visible method '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, methodDefinition)));
+
+                    bool foundMethodDefinition = false;
+                    foreach (var newMethodDefinition in newMethodDefinitions)
+                    {
+                        BlobReader referenceSignatureReader = referenceMetadata.GetBlobReader(methodDefinition.Signature);
+                        BlobReader newSignatureReader = newMetadata.GetBlobReader(newMethodDefinition.Signature);
+                        if (!IsSameMethodSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                            continue;
+
+                        if (methodDefinition.Attributes != newMethodDefinition.Attributes)
+                            throw new NotImplementedException("Attributes of publicly-visible method changed.");
+
+                        foundMethodDefinition = true;
+                        break;
+                    }
+
+                    if (!foundMethodDefinition)
+                        throw new NotImplementedException(string.Format("Publicly-visible method '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, methodDefinition)));
+                }
 
                 // check events
                 foreach (var eventDefinition in typeDefinition.GetEvents().Select(referenceMetadata.GetEventDefinition))
@@ -218,6 +265,14 @@
             string typeName = GetMetadataName(metadataReader, declaringTypeDefinition);
             string fieldName = metadataReader.GetString(fieldDefinition.Name);
             return string.Format("{0}.{1}", typeName, fieldName);
+        }
+
+        private string GetMetadataName(MetadataReader metadataReader, MethodDefinition methodDefinition)
+        {
+            TypeDefinition declaringTypeDefinition = metadataReader.GetTypeDefinition(methodDefinition.GetDeclaringType());
+            string typeName = GetMetadataName(metadataReader, declaringTypeDefinition);
+            string methodName = metadataReader.GetString(methodDefinition.Name);
+            return string.Format("{0}.{1}", typeName, methodName);
         }
 
         private string GetMetadataName(MetadataReader metadataReader, EventDefinition eventDefinition, TypeDefinition declaringTypeDefinition)
@@ -380,6 +435,41 @@
             return IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader);
         }
 
+        private bool IsSameMethodSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
+        {
+            SignatureHeader referenceHeader = referenceSignatureReader.ReadSignatureHeader();
+            SignatureHeader newHeader = newSignatureReader.ReadSignatureHeader();
+            if (referenceHeader.Kind != SignatureKind.Method || newHeader.Kind != SignatureKind.Method)
+                throw new InvalidOperationException("Expected method signatures.");
+
+            if (referenceHeader.RawValue != newHeader.RawValue)
+                return false;
+
+            if (referenceHeader.IsGeneric)
+            {
+                int referenceGenericParameterCount = referenceSignatureReader.ReadCompressedInteger();
+                int newGenericParameterCount = newSignatureReader.ReadCompressedInteger();
+                if (referenceGenericParameterCount != newGenericParameterCount)
+                    return false;
+            }
+
+            int referenceParameterCount = referenceSignatureReader.ReadCompressedInteger();
+            int newParameterCount = newSignatureReader.ReadCompressedInteger();
+            if (referenceParameterCount != newParameterCount)
+                return false;
+
+            if (!IsSameReturnTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                return false;
+
+            for (int i = 0; i < referenceParameterCount; i++)
+            {
+                if (!IsSameParameterSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                    return false;
+            }
+
+            return true;
+        }
+
         private bool IsSamePropertySignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
         {
             SignatureHeader referenceHeader = referenceSignatureReader.ReadSignatureHeader();
@@ -428,6 +518,42 @@
             case SignatureTypeCode.TypedReference:
                 referenceSignatureReader.ReadSignatureTypeCode();
                 if (newSignatureReader.ReadSignatureTypeCode() != SignatureTypeCode.TypedReference)
+                    return false;
+
+                return true;
+
+            default:
+                break;
+            }
+
+            return IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader);
+        }
+
+        private bool IsSameReturnTypeSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
+        {
+            SkipCustomModifiers(ref referenceSignatureReader);
+            SkipCustomModifiers(ref newSignatureReader);
+
+            switch (PeekSignatureTypeCode(referenceSignatureReader))
+            {
+            case SignatureTypeCode.ByReference:
+                referenceSignatureReader.ReadSignatureTypeCode();
+                if (newSignatureReader.ReadSignatureTypeCode() != SignatureTypeCode.ByReference)
+                    return false;
+
+                // followed by a Type signature
+                break;
+
+            case SignatureTypeCode.TypedReference:
+                referenceSignatureReader.ReadSignatureTypeCode();
+                if (newSignatureReader.ReadSignatureTypeCode() != SignatureTypeCode.TypedReference)
+                    return false;
+
+                return true;
+
+            case SignatureTypeCode.Void:
+                referenceSignatureReader.ReadSignatureTypeCode();
+                if (newSignatureReader.ReadSignatureTypeCode() != SignatureTypeCode.Void)
                     return false;
 
                 return true;
@@ -513,7 +639,9 @@
                 throw new NotImplementedException(string.Format("{0} is not yet implemented.", referenceTypeCode));
 
             case SignatureTypeCode.SZArray:
-                throw new NotImplementedException(string.Format("{0} is not yet implemented.", referenceTypeCode));
+                SkipCustomModifiers(ref referenceSignatureReader);
+                SkipCustomModifiers(ref newSignatureReader);
+                return IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader);
 
             default:
                 throw new InvalidOperationException("Invalid signature type code.");
@@ -703,6 +831,33 @@
             if (checkDeclaringType)
             {
                 TypeDefinition declaringTypeDefinition = referenceMetadata.GetTypeDefinition(fieldDefinition.GetDeclaringType());
+                if (!IsPubliclyVisible(referenceMetadata, declaringTypeDefinition))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool IsPubliclyVisible(MetadataReader referenceMetadata, MethodDefinition methodDefinition, bool checkDeclaringType = false)
+        {
+            switch (methodDefinition.Attributes & MethodAttributes.MemberAccessMask)
+            {
+            case MethodAttributes.Public:
+            case MethodAttributes.Family:
+            case MethodAttributes.FamORAssem:
+                break;
+
+            case MethodAttributes.FamANDAssem:
+            case MethodAttributes.Assembly:
+            case MethodAttributes.Private:
+            case MethodAttributes.PrivateScope:
+            default:
+                return false;
+            }
+
+            if (checkDeclaringType)
+            {
+                TypeDefinition declaringTypeDefinition = referenceMetadata.GetTypeDefinition(methodDefinition.GetDeclaringType());
                 if (!IsPubliclyVisible(referenceMetadata, declaringTypeDefinition))
                     return false;
             }
