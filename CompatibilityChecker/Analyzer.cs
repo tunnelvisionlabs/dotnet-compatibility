@@ -132,8 +132,66 @@
                 // check methods
 
                 // check events
+                foreach (var eventDefinition in typeDefinition.GetEvents().Select(referenceMetadata.GetEventDefinition))
+                {
+                    if (!IsPubliclyVisible(referenceMetadata, eventDefinition))
+                        continue;
+
+                    string referenceName = referenceMetadata.GetString(eventDefinition.Name);
+
+                    EventDefinitionHandle newEventDefinitionHandle = default(EventDefinitionHandle);
+                    foreach (var eventDefinitionHandle in newTypeDefinition.GetEvents())
+                    {
+                        string newName = newMetadata.GetString(newMetadata.GetEventDefinition(eventDefinitionHandle).Name);
+                        if (string.Equals(referenceName, newName, StringComparison.Ordinal))
+                        {
+                            newEventDefinitionHandle = eventDefinitionHandle;
+                            break;
+                        }
+                    }
+
+                    if (newEventDefinitionHandle.IsNil)
+                        throw new NotImplementedException(string.Format("Publicly-visible event '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, eventDefinition, typeDefinition)));
+
+                    EventDefinition newEventDefinition = newMetadata.GetEventDefinition(newEventDefinitionHandle);
+                    if (eventDefinition.Attributes != newEventDefinition.Attributes)
+                        throw new NotImplementedException("Attributes of publicly-visible event changed.");
+
+                    if (!IsSameType(referenceMetadata, newMetadata, eventDefinition.Type, newEventDefinition.Type))
+                        throw new NotImplementedException("Signature of publicly-visible event changed.");
+                }
 
                 // check properties
+                foreach (var propertyDefinition in typeDefinition.GetProperties().Select(referenceMetadata.GetPropertyDefinition))
+                {
+                    if (!IsPubliclyVisible(referenceMetadata, propertyDefinition))
+                        continue;
+
+                    string referenceName = referenceMetadata.GetString(propertyDefinition.Name);
+
+                    PropertyDefinitionHandle newPropertyDefinitionHandle = default(PropertyDefinitionHandle);
+                    foreach (var propertyDefinitionHandle in newTypeDefinition.GetProperties())
+                    {
+                        string newName = newMetadata.GetString(newMetadata.GetPropertyDefinition(propertyDefinitionHandle).Name);
+                        if (string.Equals(referenceName, newName, StringComparison.Ordinal))
+                        {
+                            newPropertyDefinitionHandle = propertyDefinitionHandle;
+                            break;
+                        }
+                    }
+
+                    if (newPropertyDefinitionHandle.IsNil)
+                        throw new NotImplementedException(string.Format("Publicly-visible property '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, propertyDefinition, typeDefinition)));
+
+                    PropertyDefinition newPropertyDefinition = newMetadata.GetPropertyDefinition(newPropertyDefinitionHandle);
+                    if (propertyDefinition.Attributes != newPropertyDefinition.Attributes)
+                        throw new NotImplementedException("Attributes of publicly-visible property changed.");
+
+                    BlobReader referenceSignatureReader = referenceMetadata.GetBlobReader(propertyDefinition.Signature);
+                    BlobReader newSignatureReader = newMetadata.GetBlobReader(newPropertyDefinition.Signature);
+                    if (!IsSamePropertySignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                        throw new NotImplementedException("Signature of publicly-visible property changed.");
+                }
             }
         }
 
@@ -160,6 +218,20 @@
             string typeName = GetMetadataName(metadataReader, declaringTypeDefinition);
             string fieldName = metadataReader.GetString(fieldDefinition.Name);
             return string.Format("{0}.{1}", typeName, fieldName);
+        }
+
+        private string GetMetadataName(MetadataReader metadataReader, EventDefinition eventDefinition, TypeDefinition declaringTypeDefinition)
+        {
+            string typeName = GetMetadataName(metadataReader, declaringTypeDefinition);
+            string eventName = metadataReader.GetString(eventDefinition.Name);
+            return string.Format("{0}.{1}", typeName, eventName);
+        }
+
+        private string GetMetadataName(MetadataReader metadataReader, PropertyDefinition propertyDefinition, TypeDefinition declaringTypeDefinition)
+        {
+            string typeName = GetMetadataName(metadataReader, declaringTypeDefinition);
+            string propertyName = metadataReader.GetString(propertyDefinition.Name);
+            return string.Format("{0}.{1}", typeName, propertyName);
         }
 
         private void CheckBaseType(MetadataReader referenceMetadata, MetadataReader newMetadata, TypeDefinition referenceBaseTypeDefinition, TypeDefinitionHandle newBaseTypeDefinitionHandle)
@@ -306,6 +378,70 @@
             SkipCustomModifiers(ref referenceSignatureReader);
             SkipCustomModifiers(ref newSignatureReader);
             return IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader);
+        }
+
+        private bool IsSamePropertySignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
+        {
+            SignatureHeader referenceHeader = referenceSignatureReader.ReadSignatureHeader();
+            SignatureHeader newHeader = newSignatureReader.ReadSignatureHeader();
+            if (referenceHeader.Kind != SignatureKind.Property || newHeader.Kind != SignatureKind.Property)
+                throw new InvalidOperationException("Expected property signatures.");
+
+            if (referenceHeader.IsInstance != newHeader.IsInstance)
+                return false;
+
+            int referenceParameterCount = referenceSignatureReader.ReadCompressedInteger();
+            int newParameterCount = newSignatureReader.ReadCompressedInteger();
+            if (referenceParameterCount != newParameterCount)
+                return false;
+
+            SkipCustomModifiers(ref referenceSignatureReader);
+            SkipCustomModifiers(ref newSignatureReader);
+
+            if (!IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                return false;
+
+            for (int i = 0; i < referenceParameterCount; i++)
+            {
+                if (!IsSameParameterSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool IsSameParameterSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
+        {
+            SkipCustomModifiers(ref referenceSignatureReader);
+            SkipCustomModifiers(ref newSignatureReader);
+
+            switch (PeekSignatureTypeCode(referenceSignatureReader))
+            {
+            case SignatureTypeCode.ByReference:
+                referenceSignatureReader.ReadSignatureTypeCode();
+                if (newSignatureReader.ReadSignatureTypeCode() != SignatureTypeCode.ByReference)
+                    return false;
+
+                // followed by a Type signature
+                break;
+
+            case SignatureTypeCode.TypedReference:
+                referenceSignatureReader.ReadSignatureTypeCode();
+                if (newSignatureReader.ReadSignatureTypeCode() != SignatureTypeCode.TypedReference)
+                    return false;
+
+                return true;
+
+            default:
+                break;
+            }
+
+            return IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader);
+        }
+
+        private SignatureTypeCode PeekSignatureTypeCode(BlobReader blobReader)
+        {
+            return blobReader.ReadSignatureTypeCode();
         }
 
         private bool IsSameTypeSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
@@ -572,6 +708,53 @@
             }
 
             return true;
+        }
+
+        private bool IsPubliclyVisible(MetadataReader referenceMetadata, EventDefinition eventDefinition, bool checkDeclaringType = false)
+        {
+            EventAccessors eventAccessors = eventDefinition.GetAccessors();
+            if (!eventAccessors.Adder.IsNil)
+            {
+                MethodDefinition adderMethodDefinition = referenceMetadata.GetMethodDefinition(eventAccessors.Adder);
+                if (IsPubliclyVisible(referenceMetadata, adderMethodDefinition, checkDeclaringType))
+                    return true;
+            }
+
+            if (!eventAccessors.Remover.IsNil)
+            {
+                MethodDefinition removerMethodDefinition = referenceMetadata.GetMethodDefinition(eventAccessors.Remover);
+                if (IsPubliclyVisible(referenceMetadata, removerMethodDefinition, checkDeclaringType))
+                    return true;
+            }
+
+            if (!eventAccessors.Raiser.IsNil)
+            {
+                MethodDefinition raiserMethodDefinition = referenceMetadata.GetMethodDefinition(eventAccessors.Raiser);
+                if (IsPubliclyVisible(referenceMetadata, raiserMethodDefinition, checkDeclaringType))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool IsPubliclyVisible(MetadataReader referenceMetadata, PropertyDefinition propertyDefinition, bool checkDeclaringType = false)
+        {
+            PropertyAccessors propertyAccessors = propertyDefinition.GetAccessors();
+            if (!propertyAccessors.Getter.IsNil)
+            {
+                MethodDefinition getterMethodDefinition = referenceMetadata.GetMethodDefinition(propertyAccessors.Getter);
+                if (IsPubliclyVisible(referenceMetadata, getterMethodDefinition, checkDeclaringType))
+                    return true;
+            }
+
+            if (!propertyAccessors.Setter.IsNil)
+            {
+                MethodDefinition setterMethodDefinition = referenceMetadata.GetMethodDefinition(propertyAccessors.Setter);
+                if (IsPubliclyVisible(referenceMetadata, setterMethodDefinition, checkDeclaringType))
+                    return true;
+            }
+
+            return false;
         }
 
         private bool IsMarkedPreliminary(MetadataReader metadataReader, TypeDefinition typeDefinition)
