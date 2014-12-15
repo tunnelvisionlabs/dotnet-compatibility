@@ -1,0 +1,10 @@
+# Build and test output
+obj/
+bin/
+packages/
+TestResults/
+
+# Per-user files created by Visual Studio
+*.sln.ide/
+*.user
+*.suo
