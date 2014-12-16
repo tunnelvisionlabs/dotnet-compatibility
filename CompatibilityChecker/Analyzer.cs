@@ -238,6 +238,53 @@
                     BlobReader newSignatureReader = newMetadata.GetBlobReader(newPropertyDefinition.Signature);
                     if (!IsSamePropertySignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
                         throw new NotImplementedException("Signature of publicly-visible property changed.");
+
+                    PropertyAccessors propertyAccessors = propertyDefinition.GetAccessors();
+                    if (!propertyAccessors.Getter.IsNil)
+                    {
+                        MethodDefinition referenceGetterMethodDefinition = referenceMetadata.GetMethodDefinition(propertyAccessors.Getter);
+                        if (IsPubliclyVisible(referenceMetadata, referenceGetterMethodDefinition))
+                        {
+                            PropertyAccessors newPropertyAccessors = newPropertyDefinition.GetAccessors();
+                            if (newPropertyAccessors.Getter.IsNil)
+                                throw new NotImplementedException("Property getter was removed.");
+
+                            MethodDefinition newGetterMethodDefinition = newMetadata.GetMethodDefinition(newPropertyAccessors.Getter);
+
+                            string referenceGetterName = referenceMetadata.GetString(referenceGetterMethodDefinition.Name);
+                            string newGetterName = newMetadata.GetString(newGetterMethodDefinition.Name);
+                            if (!string.Equals(referenceGetterName, newGetterName, StringComparison.Ordinal))
+                                throw new NotImplementedException("Signature of property getter changed.");
+
+                            BlobReader referenceAccessorSignatureReader = referenceMetadata.GetBlobReader(referenceGetterMethodDefinition.Signature);
+                            BlobReader newAccessorSignatureReader = newMetadata.GetBlobReader(newGetterMethodDefinition.Signature);
+                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, ref referenceAccessorSignatureReader, ref newAccessorSignatureReader))
+                                throw new NotImplementedException("Signature of property getter changed.");
+                        }
+                    }
+
+                    if (!propertyAccessors.Setter.IsNil)
+                    {
+                        MethodDefinition referenceSetterMethodDefinition = referenceMetadata.GetMethodDefinition(propertyAccessors.Setter);
+                        if (IsPubliclyVisible(referenceMetadata, referenceSetterMethodDefinition))
+                        {
+                            PropertyAccessors newPropertyAccessors = newPropertyDefinition.GetAccessors();
+                            if (newPropertyAccessors.Setter.IsNil)
+                                throw new NotImplementedException("Property setter was removed.");
+
+                            MethodDefinition newSetterMethodDefinition = newMetadata.GetMethodDefinition(newPropertyAccessors.Setter);
+
+                            string referenceSetterName = referenceMetadata.GetString(referenceSetterMethodDefinition.Name);
+                            string newSetterName = newMetadata.GetString(newSetterMethodDefinition.Name);
+                            if (!string.Equals(referenceSetterName, newSetterName, StringComparison.Ordinal))
+                                throw new NotImplementedException("Signature of property setter changed.");
+
+                            BlobReader referenceAccessorSignatureReader = referenceMetadata.GetBlobReader(referenceSetterMethodDefinition.Signature);
+                            BlobReader newAccessorSignatureReader = newMetadata.GetBlobReader(newSetterMethodDefinition.Signature);
+                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, ref referenceAccessorSignatureReader, ref newAccessorSignatureReader))
+                                throw new NotImplementedException("Signature of property setter changed.");
+                        }
+                    }
                 }
             }
         }
