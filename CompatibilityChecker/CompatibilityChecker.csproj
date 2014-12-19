@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\CompatibilityChecker.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\CompatibilityChecker.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -49,14 +51,26 @@
     <Compile Include="Analyzer.cs" />
     <Compile Include="ArrayShapeSignature.cs" />
     <Compile Include="BlobReaderExtensions.cs" />
+    <Compile Include="ConsoleMessageLogger.cs" />
     <Compile Include="CustomModifierSignature.cs" />
+    <Compile Include="Descriptors\AbstractMustNotBeAddedToType.cs" />
+    <Compile Include="Descriptors\AssemblyNameMustNotBeChanged.cs" />
+    <Compile Include="Descriptors\Categories.cs" />
+    <Compile Include="Descriptors\CompatibilityDescriptor.cs" />
+    <Compile Include="Descriptors\PublicKeyMustNotBeChanged.cs" />
+    <Compile Include="Descriptors\SealedMustNotBeAddedToType.cs" />
+    <Compile Include="Descriptors\TitleHelper.cs" />
+    <Compile Include="Descriptors\TypeMustNotBeRemoved.cs" />
     <Compile Include="FieldSignature.cs" />
+    <Compile Include="IMessageLogger.cs" />
+    <Compile Include="Message.cs" />
     <Compile Include="MetadataReaderExtensions.cs" />
     <Compile Include="MethodSignature.cs" />
     <Compile Include="ParameterSignature.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertySignature.cs" />
     <Compile Include="ReturnTypeSignature.cs" />
+    <Compile Include="Severity.cs" />
     <Compile Include="TypeSignature.cs" />
     <Compile Include="TypeSpecificationSignature.cs" />
   </ItemGroup>
