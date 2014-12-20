@@ -47,6 +47,7 @@ These analysis rules only apply to types which are publicly accessible in the re
    [#9](https://github.com/rackerlabs/dotnet-compatibility/issues/9).
 3. [ ] New interface implementations cannot be added to publicly-accessible interface types (not yet implemented; see
    [#12](https://github.com/rackerlabs/dotnet-compatibility/issues/12)).
+4. [x] New methods cannot be added to an existing interface.
 
 ### Field analysis
 

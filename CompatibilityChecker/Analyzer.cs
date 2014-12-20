@@ -181,6 +181,13 @@
                         throw new NotImplementedException(string.Format("Publicly-visible method '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, methodDefinition)));
                 }
 
+                // If the type is an interface, additionally make sure the number of methods did not change.
+                if ((typeDefinition.Attributes & TypeAttributes.ClassSemanticsMask) == TypeAttributes.Interface)
+                {
+                    if (typeDefinition.GetMethods().Count != newTypeDefinition.GetMethods().Count)
+                        throw new NotImplementedException("Method was added to an interface.");
+                }
+
                 // check events
                 foreach (var eventDefinition in typeDefinition.GetEvents().Select(referenceMetadata.GetEventDefinition))
                 {
