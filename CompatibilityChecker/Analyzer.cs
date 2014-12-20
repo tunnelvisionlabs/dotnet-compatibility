@@ -216,6 +216,77 @@
 
                     if (!IsSameType(referenceMetadata, newMetadata, eventDefinition.Type, newEventDefinition.Type))
                         throw new NotImplementedException("Signature of publicly-visible event changed.");
+
+                    EventAccessors eventAccessors = eventDefinition.GetAccessors();
+
+                    if (!eventAccessors.Adder.IsNil)
+                    {
+                        MethodDefinition referenceAdderMethodDefinition = referenceMetadata.GetMethodDefinition(eventAccessors.Adder);
+                        if (IsPubliclyVisible(referenceMetadata, referenceAdderMethodDefinition))
+                        {
+                            EventAccessors newEventAccessors = newEventDefinition.GetAccessors();
+                            if (newEventAccessors.Adder.IsNil)
+                                throw new NotImplementedException("Event adder was removed.");
+
+                            MethodDefinition newAdderMethodDefinition = newMetadata.GetMethodDefinition(newEventAccessors.Adder);
+
+                            string referenceAdderName = referenceMetadata.GetString(referenceAdderMethodDefinition.Name);
+                            string newAdderName = newMetadata.GetString(newAdderMethodDefinition.Name);
+                            if (!string.Equals(referenceAdderName, newAdderName, StringComparison.Ordinal))
+                                throw new NotImplementedException("Signature of event adder changed.");
+
+                            BlobReader referenceSignatureReader = referenceMetadata.GetBlobReader(referenceAdderMethodDefinition.Signature);
+                            BlobReader newSignatureReader = newMetadata.GetBlobReader(newAdderMethodDefinition.Signature);
+                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                                throw new NotImplementedException("Signature of event adder changed.");
+                        }
+                    }
+
+                    if (!eventAccessors.Remover.IsNil)
+                    {
+                        MethodDefinition referenceRemoverMethodDefinition = referenceMetadata.GetMethodDefinition(eventAccessors.Remover);
+                        if (IsPubliclyVisible(referenceMetadata, referenceRemoverMethodDefinition))
+                        {
+                            EventAccessors newEventAccessors = newEventDefinition.GetAccessors();
+                            if (newEventAccessors.Remover.IsNil)
+                                throw new NotImplementedException("Event remover was removed.");
+
+                            MethodDefinition newRemoverMethodDefinition = newMetadata.GetMethodDefinition(newEventAccessors.Remover);
+
+                            string referenceRemoverName = referenceMetadata.GetString(referenceRemoverMethodDefinition.Name);
+                            string newRemoverName = newMetadata.GetString(newRemoverMethodDefinition.Name);
+                            if (!string.Equals(referenceRemoverName, newRemoverName, StringComparison.Ordinal))
+                                throw new NotImplementedException("Signature of event remover changed.");
+
+                            BlobReader referenceSignatureReader = referenceMetadata.GetBlobReader(referenceRemoverMethodDefinition.Signature);
+                            BlobReader newSignatureReader = newMetadata.GetBlobReader(newRemoverMethodDefinition.Signature);
+                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                                throw new NotImplementedException("Signature of event remover changed.");
+                        }
+                    }
+
+                    if (!eventAccessors.Raiser.IsNil)
+                    {
+                        MethodDefinition referenceRaiserMethodDefinition = referenceMetadata.GetMethodDefinition(eventAccessors.Raiser);
+                        if (IsPubliclyVisible(referenceMetadata, referenceRaiserMethodDefinition))
+                        {
+                            EventAccessors newEventAccessors = newEventDefinition.GetAccessors();
+                            if (newEventAccessors.Raiser.IsNil)
+                                throw new NotImplementedException("Event raiser was removed.");
+
+                            MethodDefinition newRaiserMethodDefinition = newMetadata.GetMethodDefinition(newEventAccessors.Raiser);
+
+                            string referenceRaiserName = referenceMetadata.GetString(referenceRaiserMethodDefinition.Name);
+                            string newRaiserName = newMetadata.GetString(newRaiserMethodDefinition.Name);
+                            if (!string.Equals(referenceRaiserName, newRaiserName, StringComparison.Ordinal))
+                                throw new NotImplementedException("Signature of event raiser changed.");
+
+                            BlobReader referenceSignatureReader = referenceMetadata.GetBlobReader(referenceRaiserMethodDefinition.Signature);
+                            BlobReader newSignatureReader = newMetadata.GetBlobReader(newRaiserMethodDefinition.Signature);
+                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                                throw new NotImplementedException("Signature of event raiser changed.");
+                        }
+                    }
                 }
 
                 // check properties
