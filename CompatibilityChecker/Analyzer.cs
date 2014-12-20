@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Reflection;
     using System.Reflection.Metadata;
@@ -127,10 +128,8 @@
                     if (fieldDefinition.Attributes != newFieldDefinition.Attributes)
                         throw new NotImplementedException("Attributes of publicly-visible field changed.");
 
-                    BlobReader referenceSignatureReader = referenceMetadata.GetBlobReader(fieldDefinition.Signature);
-                    BlobReader newSignatureReader = newMetadata.GetBlobReader(newFieldDefinition.Signature);
-                    if (!IsSameFieldSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
-                        throw new NotImplementedException("Signature of publicly-visible field changed.");
+                    if (!IsSameFieldSignature(referenceMetadata, newMetadata, referenceMetadata.GetSignature(fieldDefinition), newMetadata.GetSignature(newFieldDefinition)))
+                        throw new NotImplementedException("Signature of publicly-accessible field changed.");
 
                     if (!fieldDefinition.GetDefaultValue().IsNil)
                     {
@@ -181,9 +180,9 @@
                     bool foundMethodDefinition = false;
                     foreach (var newMethodDefinition in newMethodDefinitions)
                     {
-                        BlobReader referenceSignatureReader = referenceMetadata.GetBlobReader(methodDefinition.Signature);
-                        BlobReader newSignatureReader = newMetadata.GetBlobReader(newMethodDefinition.Signature);
-                        if (!IsSameMethodSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                        MethodSignature referenceSignatureReader = referenceMetadata.GetSignature(methodDefinition);
+                        MethodSignature newSignatureReader = newMetadata.GetSignature(newMethodDefinition);
+                        if (!IsSameMethodSignature(referenceMetadata, newMetadata, referenceSignatureReader, newSignatureReader))
                             continue;
 
                         if (methodDefinition.Attributes != newMethodDefinition.Attributes)
@@ -251,9 +250,9 @@
                             if (!string.Equals(referenceAdderName, newAdderName, StringComparison.Ordinal))
                                 throw new NotImplementedException("Signature of event adder changed.");
 
-                            BlobReader referenceSignatureReader = referenceMetadata.GetBlobReader(referenceAdderMethodDefinition.Signature);
-                            BlobReader newSignatureReader = newMetadata.GetBlobReader(newAdderMethodDefinition.Signature);
-                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                            MethodSignature referenceSignatureReader = referenceMetadata.GetSignature(referenceAdderMethodDefinition);
+                            MethodSignature newSignatureReader = newMetadata.GetSignature(newAdderMethodDefinition);
+                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, referenceSignatureReader, newSignatureReader))
                                 throw new NotImplementedException("Signature of event adder changed.");
                         }
                     }
@@ -274,9 +273,9 @@
                             if (!string.Equals(referenceRemoverName, newRemoverName, StringComparison.Ordinal))
                                 throw new NotImplementedException("Signature of event remover changed.");
 
-                            BlobReader referenceSignatureReader = referenceMetadata.GetBlobReader(referenceRemoverMethodDefinition.Signature);
-                            BlobReader newSignatureReader = newMetadata.GetBlobReader(newRemoverMethodDefinition.Signature);
-                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                            MethodSignature referenceSignatureReader = referenceMetadata.GetSignature(referenceRemoverMethodDefinition);
+                            MethodSignature newSignatureReader = newMetadata.GetSignature(newRemoverMethodDefinition);
+                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, referenceSignatureReader, newSignatureReader))
                                 throw new NotImplementedException("Signature of event remover changed.");
                         }
                     }
@@ -297,9 +296,9 @@
                             if (!string.Equals(referenceRaiserName, newRaiserName, StringComparison.Ordinal))
                                 throw new NotImplementedException("Signature of event raiser changed.");
 
-                            BlobReader referenceSignatureReader = referenceMetadata.GetBlobReader(referenceRaiserMethodDefinition.Signature);
-                            BlobReader newSignatureReader = newMetadata.GetBlobReader(newRaiserMethodDefinition.Signature);
-                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                            MethodSignature referenceSignatureReader = referenceMetadata.GetSignature(referenceRaiserMethodDefinition);
+                            MethodSignature newSignatureReader = newMetadata.GetSignature(newRaiserMethodDefinition);
+                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, referenceSignatureReader, newSignatureReader))
                                 throw new NotImplementedException("Signature of event raiser changed.");
                         }
                     }
@@ -331,9 +330,9 @@
                     if (propertyDefinition.Attributes != newPropertyDefinition.Attributes)
                         throw new NotImplementedException("Attributes of publicly-visible property changed.");
 
-                    BlobReader referenceSignatureReader = referenceMetadata.GetBlobReader(propertyDefinition.Signature);
-                    BlobReader newSignatureReader = newMetadata.GetBlobReader(newPropertyDefinition.Signature);
-                    if (!IsSamePropertySignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                    PropertySignature referenceSignature = referenceMetadata.GetSignature(propertyDefinition);
+                    PropertySignature newSignature = newMetadata.GetSignature(newPropertyDefinition);
+                    if (!IsSamePropertySignature(referenceMetadata, newMetadata, referenceSignature, newSignature))
                         throw new NotImplementedException("Signature of publicly-visible property changed.");
 
                     PropertyAccessors propertyAccessors = propertyDefinition.GetAccessors();
@@ -353,9 +352,9 @@
                             if (!string.Equals(referenceGetterName, newGetterName, StringComparison.Ordinal))
                                 throw new NotImplementedException("Signature of property getter changed.");
 
-                            BlobReader referenceAccessorSignatureReader = referenceMetadata.GetBlobReader(referenceGetterMethodDefinition.Signature);
-                            BlobReader newAccessorSignatureReader = newMetadata.GetBlobReader(newGetterMethodDefinition.Signature);
-                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, ref referenceAccessorSignatureReader, ref newAccessorSignatureReader))
+                            MethodSignature referenceAccessorSignatureReader = referenceMetadata.GetSignature(referenceGetterMethodDefinition);
+                            MethodSignature newAccessorSignatureReader = newMetadata.GetSignature(newGetterMethodDefinition);
+                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, referenceAccessorSignatureReader, newAccessorSignatureReader))
                                 throw new NotImplementedException("Signature of property getter changed.");
                         }
                     }
@@ -376,9 +375,9 @@
                             if (!string.Equals(referenceSetterName, newSetterName, StringComparison.Ordinal))
                                 throw new NotImplementedException("Signature of property setter changed.");
 
-                            BlobReader referenceAccessorSignatureReader = referenceMetadata.GetBlobReader(referenceSetterMethodDefinition.Signature);
-                            BlobReader newAccessorSignatureReader = newMetadata.GetBlobReader(newSetterMethodDefinition.Signature);
-                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, ref referenceAccessorSignatureReader, ref newAccessorSignatureReader))
+                            MethodSignature referenceAccessorSignatureReader = referenceMetadata.GetSignature(referenceSetterMethodDefinition);
+                            MethodSignature newAccessorSignatureReader = newMetadata.GetSignature(newSetterMethodDefinition);
+                            if (!IsSameMethodSignature(referenceMetadata, newMetadata, referenceAccessorSignatureReader, newAccessorSignatureReader))
                                 throw new NotImplementedException("Signature of property setter changed.");
                         }
                     }
@@ -540,11 +539,11 @@
 
         private bool IsSameType(MetadataReader referenceMetadata, MetadataReader newMetadata, TypeSpecification referenceTypeSpecification, TypeSpecification newTypeSpecification)
         {
-            BlobReader referenceSignatureReader = referenceMetadata.GetBlobReader(referenceTypeSpecification.Signature);
-            BlobReader newSignatureReader = newMetadata.GetBlobReader(newTypeSpecification.Signature);
+            TypeSpecificationSignature referenceSignature = referenceMetadata.GetSignature(referenceTypeSpecification);
+            TypeSpecificationSignature newSignature = newMetadata.GetSignature(newTypeSpecification);
 
-            SignatureTypeCode referenceTypeCode = referenceSignatureReader.ReadSignatureTypeCode();
-            SignatureTypeCode newTypeCode = newSignatureReader.ReadSignatureTypeCode();
+            SignatureTypeCode referenceTypeCode = referenceSignature.TypeCode;
+            SignatureTypeCode newTypeCode = newSignature.TypeCode;
             if (referenceTypeCode != newTypeCode)
                 return false;
 
@@ -567,21 +566,17 @@
                 return true;
 
             case SignatureTypeCode.GenericTypeInstance:
-                referenceSignatureReader.ReadSignatureTypeCode();
-                newSignatureReader.ReadSignatureTypeCode();
-                Handle referenceGenericType = referenceSignatureReader.ReadTypeHandle();
-                Handle newGenericType = newSignatureReader.ReadTypeHandle();
-                if (!IsSameType(referenceMetadata, newMetadata, referenceGenericType, newGenericType))
+                if (!IsSameType(referenceMetadata, newMetadata, referenceSignature.TypeHandle, newSignature.TypeHandle))
                     return false;
 
-                int referenceGenericArgumentCount = referenceSignatureReader.ReadCompressedInteger();
-                int newGenericArgumentCount = newSignatureReader.ReadCompressedInteger();
-                if (referenceGenericArgumentCount != newGenericArgumentCount)
+                ImmutableArray<TypeSignature> referenceGenericArguments = referenceSignature.GenericTypeArguments;
+                ImmutableArray<TypeSignature> newGenericArguments = newSignature.GenericTypeArguments;
+                if (referenceGenericArguments.Length != newGenericArguments.Length)
                     return false;
 
-                for (int i = 0; i < referenceGenericArgumentCount; i++)
+                for (int i = 0; i < referenceGenericArguments.Length; i++)
                 {
-                    if (!IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                    if (!IsSameTypeSignature(referenceMetadata, newMetadata, referenceGenericArguments[i], newGenericArguments[i]))
                         return false;
                 }
 
@@ -592,22 +587,18 @@
             }
         }
 
-        private bool IsSameFieldSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
+        private bool IsSameFieldSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, FieldSignature referenceSignature, FieldSignature newSignature)
         {
-            SignatureHeader referenceHeader = referenceSignatureReader.ReadSignatureHeader();
-            SignatureHeader newHeader = newSignatureReader.ReadSignatureHeader();
-            if (referenceHeader.Kind != SignatureKind.Field || newHeader.Kind != SignatureKind.Field)
-                throw new InvalidOperationException("Expected field signatures.");
+            if (!referenceSignature.CustomModifiers.IsEmpty || !newSignature.CustomModifiers.IsEmpty)
+                throw new NotImplementedException();
 
-            SkipCustomModifiers(ref referenceSignatureReader);
-            SkipCustomModifiers(ref newSignatureReader);
-            return IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader);
+            return IsSameTypeSignature(referenceMetadata, newMetadata, referenceSignature.Type, newSignature.Type);
         }
 
-        private bool IsSameMethodSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
+        private bool IsSameMethodSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, MethodSignature referenceSignatureReader, MethodSignature newSignatureReader)
         {
-            SignatureHeader referenceHeader = referenceSignatureReader.ReadSignatureHeader();
-            SignatureHeader newHeader = newSignatureReader.ReadSignatureHeader();
+            SignatureHeader referenceHeader = referenceSignatureReader.Header;
+            SignatureHeader newHeader = newSignatureReader.Header;
             if (referenceHeader.Kind != SignatureKind.Method || newHeader.Kind != SignatureKind.Method)
                 throw new InvalidOperationException("Expected method signatures.");
 
@@ -616,137 +607,106 @@
 
             if (referenceHeader.IsGeneric)
             {
-                int referenceGenericParameterCount = referenceSignatureReader.ReadCompressedInteger();
-                int newGenericParameterCount = newSignatureReader.ReadCompressedInteger();
-                if (referenceGenericParameterCount != newGenericParameterCount)
+                if (referenceSignatureReader.GenericParameterCount != newSignatureReader.GenericParameterCount)
                     return false;
             }
 
-            int referenceParameterCount = referenceSignatureReader.ReadCompressedInteger();
-            int newParameterCount = newSignatureReader.ReadCompressedInteger();
-            if (referenceParameterCount != newParameterCount)
+            if (!IsSameReturnTypeSignature(referenceMetadata, newMetadata, referenceSignatureReader.ReturnType, newSignatureReader.ReturnType))
                 return false;
 
-            if (!IsSameReturnTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+            var referenceParameters = referenceSignatureReader.Parameters;
+            var newParameters = newSignatureReader.Parameters;
+            if (referenceParameters.Length != newParameters.Length)
                 return false;
 
-            for (int i = 0; i < referenceParameterCount; i++)
+            for (int i = 0; i < referenceParameters.Length; i++)
             {
-                if (!IsSameParameterSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                if (!IsSameParameterSignature(referenceMetadata, newMetadata, referenceParameters[i], newParameters[i]))
                     return false;
             }
 
             return true;
         }
 
-        private bool IsSamePropertySignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
+        private bool IsSamePropertySignature(MetadataReader referenceMetadata, MetadataReader newMetadata, PropertySignature referenceSignatureReader, PropertySignature newSignatureReader)
         {
-            SignatureHeader referenceHeader = referenceSignatureReader.ReadSignatureHeader();
-            SignatureHeader newHeader = newSignatureReader.ReadSignatureHeader();
+            SignatureHeader referenceHeader = referenceSignatureReader.Header;
+            SignatureHeader newHeader = newSignatureReader.Header;
             if (referenceHeader.Kind != SignatureKind.Property || newHeader.Kind != SignatureKind.Property)
                 throw new InvalidOperationException("Expected property signatures.");
 
             if (referenceHeader.IsInstance != newHeader.IsInstance)
                 return false;
 
-            int referenceParameterCount = referenceSignatureReader.ReadCompressedInteger();
-            int newParameterCount = newSignatureReader.ReadCompressedInteger();
-            if (referenceParameterCount != newParameterCount)
+            ImmutableArray<ParameterSignature> referenceParameters = referenceSignatureReader.Parameters;
+            ImmutableArray<ParameterSignature> newParameters = newSignatureReader.Parameters;
+            if (referenceParameters.Length != newParameters.Length)
                 return false;
 
-            SkipCustomModifiers(ref referenceSignatureReader);
-            SkipCustomModifiers(ref newSignatureReader);
+            if (!referenceSignatureReader.CustomModifiers.IsEmpty || !newSignatureReader.CustomModifiers.IsEmpty)
+                throw new NotImplementedException();
 
-            if (!IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+            if (!IsSameTypeSignature(referenceMetadata, newMetadata, referenceSignatureReader.PropertyType, newSignatureReader.PropertyType))
                 return false;
 
-            for (int i = 0; i < referenceParameterCount; i++)
+            for (int i = 0; i < referenceParameters.Length; i++)
             {
-                if (!IsSameParameterSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                if (!IsSameParameterSignature(referenceMetadata, newMetadata, referenceParameters[i], newParameters[i]))
                     return false;
             }
 
             return true;
         }
 
-        private bool IsSameParameterSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
+        private bool IsSameParameterSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ParameterSignature referenceSignatureReader, ParameterSignature newSignatureReader)
         {
-            SkipCustomModifiers(ref referenceSignatureReader);
-            SkipCustomModifiers(ref newSignatureReader);
+            if (!referenceSignatureReader.CustomModifiers.IsEmpty || !newSignatureReader.CustomModifiers.IsEmpty)
+                throw new NotImplementedException();
 
-            switch (PeekSignatureTypeCode(referenceSignatureReader))
-            {
-            case SignatureTypeCode.ByReference:
-                referenceSignatureReader.ReadSignatureTypeCode();
-                if (newSignatureReader.ReadSignatureTypeCode() != SignatureTypeCode.ByReference)
-                    return false;
-
-                // followed by a Type signature
-                break;
-
-            case SignatureTypeCode.TypedReference:
-                referenceSignatureReader.ReadSignatureTypeCode();
-                if (newSignatureReader.ReadSignatureTypeCode() != SignatureTypeCode.TypedReference)
-                    return false;
-
-                return true;
-
-            default:
-                break;
-            }
-
-            return IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader);
-        }
-
-        private bool IsSameReturnTypeSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
-        {
-            SkipCustomModifiers(ref referenceSignatureReader);
-            SkipCustomModifiers(ref newSignatureReader);
-
-            switch (PeekSignatureTypeCode(referenceSignatureReader))
-            {
-            case SignatureTypeCode.ByReference:
-                referenceSignatureReader.ReadSignatureTypeCode();
-                if (newSignatureReader.ReadSignatureTypeCode() != SignatureTypeCode.ByReference)
-                    return false;
-
-                // followed by a Type signature
-                break;
-
-            case SignatureTypeCode.TypedReference:
-                referenceSignatureReader.ReadSignatureTypeCode();
-                if (newSignatureReader.ReadSignatureTypeCode() != SignatureTypeCode.TypedReference)
-                    return false;
-
-                return true;
-
-            case SignatureTypeCode.Void:
-                referenceSignatureReader.ReadSignatureTypeCode();
-                if (newSignatureReader.ReadSignatureTypeCode() != SignatureTypeCode.Void)
-                    return false;
-
-                return true;
-
-            default:
-                break;
-            }
-
-            return IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader);
-        }
-
-        private SignatureTypeCode PeekSignatureTypeCode(BlobReader blobReader)
-        {
-            return blobReader.ReadSignatureTypeCode();
-        }
-
-        private bool IsSameTypeSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ref BlobReader referenceSignatureReader, ref BlobReader newSignatureReader)
-        {
-            SignatureTypeCode referenceTypeCode = referenceSignatureReader.ReadSignatureTypeCode();
-            SignatureTypeCode newTypeCode = newSignatureReader.ReadSignatureTypeCode();
-            if (referenceTypeCode != newTypeCode)
+            if (referenceSignatureReader.TypeCode != newSignatureReader.TypeCode)
                 return false;
 
-            switch (referenceTypeCode)
+            switch (referenceSignatureReader.TypeCode)
+            {
+            case SignatureTypeCode.TypedReference:
+                return true;
+
+            default:
+                if (referenceSignatureReader.IsByRef != newSignatureReader.IsByRef)
+                    return false;
+
+                return IsSameTypeSignature(referenceMetadata, newMetadata, referenceSignatureReader.Type, newSignatureReader.Type);
+            }
+        }
+
+        private bool IsSameReturnTypeSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, ReturnTypeSignature referenceSignatureReader, ReturnTypeSignature newSignatureReader)
+        {
+            if (!referenceSignatureReader.CustomModifiers.IsEmpty || !newSignatureReader.CustomModifiers.IsEmpty)
+                throw new NotImplementedException();
+
+            if (referenceSignatureReader.TypeCode != newSignatureReader.TypeCode)
+                return false;
+
+            switch (referenceSignatureReader.TypeCode)
+            {
+            case SignatureTypeCode.TypedReference:
+            case SignatureTypeCode.Void:
+                return true;
+
+            default:
+                if (referenceSignatureReader.IsByRef != newSignatureReader.IsByRef)
+                    return false;
+
+                return IsSameTypeSignature(referenceMetadata, newMetadata, referenceSignatureReader.Type, newSignatureReader.Type);
+            }
+        }
+
+        private bool IsSameTypeSignature(MetadataReader referenceMetadata, MetadataReader newMetadata, TypeSignature referenceSignature, TypeSignature newSignature)
+        {
+            if (referenceSignature.TypeCode != newSignature.TypeCode)
+                return false;
+
+            switch (referenceSignature.TypeCode)
             {
             case SignatureTypeCode.Boolean:
             case SignatureTypeCode.Char:
@@ -769,27 +729,23 @@
                 return true;
 
             case SignatureTypeCode.Array:
-                throw new NotImplementedException(string.Format("{0} is not yet implemented.", referenceTypeCode));
+                throw new NotImplementedException(string.Format("{0} is not yet implemented.", referenceSignature.TypeCode));
 
             case SignatureTypeCode.FunctionPointer:
-                throw new NotImplementedException(string.Format("{0} is not yet implemented.", referenceTypeCode));
+                throw new NotImplementedException(string.Format("{0} is not yet implemented.", referenceSignature.TypeCode));
 
             case SignatureTypeCode.GenericTypeInstance:
-                referenceSignatureReader.ReadSignatureTypeCode();
-                newSignatureReader.ReadSignatureTypeCode();
-                Handle referenceGenericType = referenceSignatureReader.ReadTypeHandle();
-                Handle newGenericType = newSignatureReader.ReadTypeHandle();
-                if (!IsSameType(referenceMetadata, newMetadata, referenceGenericType, newGenericType))
+                if (!IsSameType(referenceMetadata, newMetadata, referenceSignature.TypeHandle, newSignature.TypeHandle))
                     return false;
 
-                int referenceGenericArgumentCount = referenceSignatureReader.ReadCompressedInteger();
-                int newGenericArgumentCount = newSignatureReader.ReadCompressedInteger();
-                if (referenceGenericArgumentCount != newGenericArgumentCount)
+                ImmutableArray<TypeSignature> referenceGenericArguments = referenceSignature.GenericTypeArguments;
+                ImmutableArray<TypeSignature> newGenericArguments = newSignature.GenericTypeArguments;
+                if (referenceGenericArguments.Length != newGenericArguments.Length)
                     return false;
 
-                for (int i = 0; i < referenceGenericArgumentCount; i++)
+                for (int i = 0; i < referenceGenericArguments.Length; i++)
                 {
-                    if (!IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
+                    if (!IsSameTypeSignature(referenceMetadata, newMetadata, referenceGenericArguments[i], newGenericArguments[i]))
                         return false;
                 }
 
@@ -797,49 +753,24 @@
 
             case SignatureTypeCode.GenericMethodParameter:
             case SignatureTypeCode.GenericTypeParameter:
-                return referenceSignatureReader.ReadCompressedInteger() == newSignatureReader.ReadCompressedInteger();
+                return referenceSignature.GenericParameterIndex == newSignature.GenericParameterIndex;
 
             case SignatureTypeCode.TypeHandle:
-                Handle referenceTypeHandle = referenceSignatureReader.ReadTypeHandle();
-                Handle newTypeHandle = newSignatureReader.ReadTypeHandle();
+                Handle referenceTypeHandle = referenceSignature.TypeHandle;
+                Handle newTypeHandle = newSignature.TypeHandle;
                 return IsSameType(referenceMetadata, newMetadata, referenceTypeHandle, newTypeHandle);
 
             case SignatureTypeCode.Pointer:
-                throw new NotImplementedException(string.Format("{0} is not yet implemented.", referenceTypeCode));
+                throw new NotImplementedException(string.Format("{0} is not yet implemented.", referenceSignature.TypeCode));
 
             case SignatureTypeCode.SZArray:
-                SkipCustomModifiers(ref referenceSignatureReader);
-                SkipCustomModifiers(ref newSignatureReader);
-                return IsSameTypeSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader);
+                if (!referenceSignature.CustomModifiers.IsEmpty || !newSignature.CustomModifiers.IsEmpty)
+                    throw new NotImplementedException();
+
+                return IsSameTypeSignature(referenceMetadata, newMetadata, referenceSignature.ElementType, newSignature.ElementType);
 
             default:
                 throw new InvalidOperationException("Invalid signature type code.");
-            }
-        }
-
-        private bool IsTypeHandle(BlobReader blobReader)
-        {
-            return blobReader.ReadSignatureTypeCode() == SignatureTypeCode.TypeHandle;
-        }
-
-        private void SkipCustomModifiers(ref BlobReader blobReader)
-        {
-            while (IsCustomModifier(blobReader))
-            {
-                throw new NotImplementedException("Custom modifiers are not yet supported.");
-            }
-        }
-
-        private bool IsCustomModifier(BlobReader blobReader)
-        {
-            switch (blobReader.ReadSignatureTypeCode())
-            {
-            case SignatureTypeCode.OptionalModifier:
-            case SignatureTypeCode.RequiredModifier:
-                return true;
-
-            default:
-                return false;
             }
         }
 

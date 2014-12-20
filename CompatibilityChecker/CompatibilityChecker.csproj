@@ -47,7 +47,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analyzer.cs" />
+    <Compile Include="ArrayShapeSignature.cs" />
+    <Compile Include="BlobReaderExtensions.cs" />
+    <Compile Include="CustomModifierSignature.cs" />
+    <Compile Include="FieldSignature.cs" />
+    <Compile Include="MetadataReaderExtensions.cs" />
+    <Compile Include="MethodSignature.cs" />
+    <Compile Include="ParameterSignature.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertySignature.cs" />
+    <Compile Include="ReturnTypeSignature.cs" />
+    <Compile Include="TypeSignature.cs" />
+    <Compile Include="TypeSpecificationSignature.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
