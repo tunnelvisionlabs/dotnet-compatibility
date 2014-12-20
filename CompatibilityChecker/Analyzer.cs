@@ -131,6 +131,22 @@
                     BlobReader newSignatureReader = newMetadata.GetBlobReader(newFieldDefinition.Signature);
                     if (!IsSameFieldSignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
                         throw new NotImplementedException("Signature of publicly-visible field changed.");
+
+                    if (!fieldDefinition.GetDefaultValue().IsNil)
+                    {
+                        if (newFieldDefinition.GetDefaultValue().IsNil)
+                            throw new NotImplementedException("Constant value of a field was removed.");
+
+                        Constant constant = referenceMetadata.GetConstant(fieldDefinition.GetDefaultValue());
+                        Constant newConstant = newMetadata.GetConstant(newFieldDefinition.GetDefaultValue());
+                        if (constant.TypeCode != newConstant.TypeCode)
+                            throw new NotImplementedException("Constant value of a field changed.");
+
+                        var referenceValue = referenceMetadata.GetBlobContent(constant.Value);
+                        var newValue = referenceMetadata.GetBlobContent(constant.Value);
+                        if (!referenceValue.SequenceEqual(newValue))
+                            throw new NotImplementedException("Constant value of a field changed.");
+                    }
                 }
 
                 // check methods
