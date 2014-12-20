@@ -24,8 +24,7 @@ reporting for changes in runtime semantics.
 
 ### Assembly analysis
 
-1. [ ] The strong name of an assembly is checked (not yet implemented; see
-   [#4](https://github.com/rackerlabs/dotnet-compatibility/issues/4)).
+1. [x] The strong name of an assembly is checked.
 2. [ ] Referenced assemblies are checked for basic compatibility (not yet implemented; see
    [#11](https://github.com/rackerlabs/dotnet-compatibility/issues/11)).
 

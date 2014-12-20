@@ -22,6 +22,9 @@
         {
             MetadataReader referenceMetadata = _referenceAssembly.GetMetadataReader();
             MetadataReader newMetadata = _newAssembly.GetMetadataReader();
+
+            CheckAssemblyProperties(referenceMetadata, newMetadata);
+
             foreach (var typeDefinition in referenceMetadata.TypeDefinitions.Select(referenceMetadata.GetTypeDefinition))
             {
                 if (!IsPubliclyVisible(referenceMetadata, typeDefinition))
@@ -239,6 +242,31 @@
                     if (!IsSamePropertySignature(referenceMetadata, newMetadata, ref referenceSignatureReader, ref newSignatureReader))
                         throw new NotImplementedException("Signature of publicly-visible property changed.");
                 }
+            }
+        }
+
+        private void CheckAssemblyProperties(MetadataReader referenceMetadata, MetadataReader newMetadata)
+        {
+            AssemblyDefinition referenceAssemblyDefinition = referenceMetadata.GetAssemblyDefinition();
+            AssemblyDefinition newAssemblyDefinition = newMetadata.GetAssemblyDefinition();
+
+            string referenceName = referenceMetadata.GetString(referenceAssemblyDefinition.Name);
+            string newName = newMetadata.GetString(newAssemblyDefinition.Name);
+            if (!string.Equals(referenceName, newName, StringComparison.Ordinal))
+                throw new NotImplementedException("Assembly name changed.");
+
+            string referenceCulture = referenceMetadata.GetString(referenceAssemblyDefinition.Culture);
+            string newCulture = referenceMetadata.GetString(newAssemblyDefinition.Culture);
+            if (!string.Equals(referenceCulture, newCulture, StringComparison.Ordinal))
+                throw new NotImplementedException("Assembly culture changed.");
+
+            if (!referenceAssemblyDefinition.PublicKey.IsNil)
+            {
+                // adding a public key is supported, but removing or changing it is not.
+                var referencePublicKey = referenceMetadata.GetBlobContent(referenceAssemblyDefinition.PublicKey);
+                var newPublicKey = newMetadata.GetBlobContent(newAssemblyDefinition.PublicKey);
+                if (!referencePublicKey.SequenceEqual(newPublicKey))
+                    throw new NotImplementedException("Public key changed.");
             }
         }
 
