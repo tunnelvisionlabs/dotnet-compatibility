@@ -28,7 +28,7 @@
                 {
                     using (PEReader newAssembly = new PEReader(File.OpenRead(Path.Combine(temporaryDirectory, "System.Collections.Immutable.1.1.33-beta", "lib", "portable-net45+win8+wp8+wpa81", "System.Collections.Immutable.dll"))))
                     {
-                        Analyzer analyzer = new Analyzer(referenceAssembly, newAssembly);
+                        Analyzer analyzer = new Analyzer(referenceAssembly, newAssembly, null);
                         analyzer.Run();
                     }
                 }
