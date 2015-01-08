@@ -7,16 +7,19 @@
     using System.Reflection;
     using System.Reflection.Metadata;
     using System.Reflection.PortableExecutable;
+    using CompatibilityChecker.Descriptors;
 
     public class Analyzer
     {
         private readonly PEReader _referenceAssembly;
         private readonly PEReader _newAssembly;
+        private readonly IMessageLogger _logger;
 
-        public Analyzer(PEReader referenceAssembly, PEReader newAssembly)
+        public Analyzer(PEReader referenceAssembly, PEReader newAssembly, IMessageLogger logger)
         {
             _referenceAssembly = referenceAssembly;
             _newAssembly = newAssembly;
+            _logger = logger ?? new ConsoleMessageLogger();
         }
 
         public void Run()
@@ -37,9 +40,31 @@
                 // make sure the type still exists
                 TypeDefinition newTypeDefinition;
                 if (!TryMapTypeToNewAssembly(referenceMetadata, newMetadata, typeDefinition, out newTypeDefinition))
-                    throw new NotImplementedException("Publicly visible type was removed.");
+                {
+                    _logger.Report(TypeMustNotBeRemoved.CreateMessage());
+                    continue;
+                }
 
-                if (typeDefinition.Attributes != newTypeDefinition.Attributes)
+                if ((typeDefinition.Attributes & TypeAttributes.Sealed) == 0)
+                {
+                    if ((newTypeDefinition.Attributes & TypeAttributes.Sealed) == TypeAttributes.Sealed
+                        && HasVisibleConstructors(newMetadata, newTypeDefinition))
+                    {
+                        _logger.Report(SealedMustNotBeAddedToType.CreateMessage());
+                    }
+                }
+
+                if ((typeDefinition.Attributes & TypeAttributes.Abstract) == 0)
+                {
+                    if ((newTypeDefinition.Attributes & TypeAttributes.Abstract) == TypeAttributes.Abstract
+                        && HasVisibleConstructors(newMetadata, newTypeDefinition))
+                    {
+                        _logger.Report(AbstractMustNotBeAddedToType.CreateMessage());
+                    }
+                }
+
+                TypeAttributes uncheckedAttributesMask = ~(TypeAttributes.Sealed | TypeAttributes.Abstract);
+                if ((typeDefinition.Attributes & uncheckedAttributesMask) != (newTypeDefinition.Attributes & uncheckedAttributesMask))
                     throw new NotImplementedException("Attributes of publicly visible type changed.");
 
                 if (IsMarkedPreliminary(newMetadata, newTypeDefinition))
@@ -393,7 +418,7 @@
             string referenceName = referenceMetadata.GetString(referenceAssemblyDefinition.Name);
             string newName = newMetadata.GetString(newAssemblyDefinition.Name);
             if (!string.Equals(referenceName, newName, StringComparison.Ordinal))
-                throw new NotImplementedException("Assembly name changed.");
+                _logger.Report(AssemblyNameMustNotBeChanged.CreateMessage());
 
             string referenceCulture = referenceMetadata.GetString(referenceAssemblyDefinition.Culture);
             string newCulture = referenceMetadata.GetString(newAssemblyDefinition.Culture);
@@ -406,8 +431,14 @@
                 var referencePublicKey = referenceMetadata.GetBlobContent(referenceAssemblyDefinition.PublicKey);
                 var newPublicKey = newMetadata.GetBlobContent(newAssemblyDefinition.PublicKey);
                 if (!referencePublicKey.SequenceEqual(newPublicKey))
-                    throw new NotImplementedException("Public key changed.");
+                    _logger.Report(PublicKeyMustNotBeChanged.CreateMessage());
             }
+        }
+
+        private bool HasVisibleConstructors(MetadataReader metadataReader, TypeDefinition typeDefinition)
+        {
+            // for now, assume that the type has publicly-visible constructors.
+            return true;
         }
 
         private string GetMetadataName(MetadataReader metadataReader, TypeDefinition typeDefinition)
