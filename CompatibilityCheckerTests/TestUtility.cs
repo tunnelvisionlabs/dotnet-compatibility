@@ -2,7 +2,9 @@
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Reflection;
     using System.Reflection.PortableExecutable;
+    using System.Security.Cryptography;
     using CompatibilityChecker;
     using File = System.IO.File;
 
@@ -20,6 +22,15 @@
 
                     return logger.RawMessages;
                 }
+            }
+        }
+
+        public static StrongNameKeyPair GenerateStrongNameKeyPair()
+        {
+            using (var provider = new RSACryptoServiceProvider(1024, new CspParameters { KeyNumber = 2 }))
+            {
+                byte[] keyPairArray = provider.ExportCspBlob(true);
+                return new StrongNameKeyPair(keyPairArray);
             }
         }
 
