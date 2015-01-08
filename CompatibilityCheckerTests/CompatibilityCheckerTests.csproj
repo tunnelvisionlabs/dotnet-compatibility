@@ -58,7 +58,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="TestAssemblyAnalysis.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CompatibilityChecker\CompatibilityChecker.csproj">
