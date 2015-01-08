@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CompatibilityChecker")]
+[assembly: AssemblyTitle("CompatibilityCheckerTests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Rackspace, Inc.")]
-[assembly: AssemblyProduct("CompatibilityChecker")]
+[assembly: AssemblyProduct("CompatibilityCheckerTests")]
 [assembly: AssemblyCopyright("Copyright © Sam Harwell 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c3d7fce7-0fed-462f-a4a6-bafc6aa91ef2")]
+[assembly: Guid("44681692-0479-4c99-bf40-f310b78d87f0")]
 
 // Version information for an assembly consists of the following four values:
 //
