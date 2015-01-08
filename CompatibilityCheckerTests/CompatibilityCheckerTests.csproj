@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="TestAssemblyAnalysis.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestTypeAnalysis.cs" />
     <Compile Include="TestUtility.cs" />
   </ItemGroup>
   <ItemGroup>
