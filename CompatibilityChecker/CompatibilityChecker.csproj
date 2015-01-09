@@ -63,7 +63,9 @@
     <Compile Include="Descriptors\TypeMustNotBeRemoved.cs" />
     <Compile Include="FieldSignature.cs" />
     <Compile Include="IMessageLogger.cs" />
+    <Compile Include="Mapping`1.cs" />
     <Compile Include="Message.cs" />
+    <Compile Include="MetadataMapping.cs" />
     <Compile Include="MetadataReaderExtensions.cs" />
     <Compile Include="MethodSignature.cs" />
     <Compile Include="ParameterSignature.cs" />

@@ -15,6 +15,12 @@
         private readonly PEReader _newAssembly;
         private readonly IMessageLogger _logger;
 
+        private MetadataReader _referenceMetadata;
+        private MetadataReader _newMetadata;
+
+        private MetadataMapping _referenceToNewMapping;
+        private MetadataMapping _newToReferenceMapping;
+
         public Analyzer(PEReader referenceAssembly, PEReader newAssembly, IMessageLogger logger)
         {
             _referenceAssembly = referenceAssembly;
@@ -24,27 +30,36 @@
 
         public void Run()
         {
-            MetadataReader referenceMetadata = _referenceAssembly.GetMetadataReader();
-            MetadataReader newMetadata = _newAssembly.GetMetadataReader();
+            _referenceMetadata = _referenceAssembly.GetMetadataReader();
+            _newMetadata = _newAssembly.GetMetadataReader();
+            var referenceMetadata = _referenceMetadata;
+            var newMetadata = _newMetadata;
+
+            _referenceToNewMapping = new MetadataMapping(referenceMetadata, newMetadata);
+            _newToReferenceMapping = new MetadataMapping(newMetadata, referenceMetadata);
 
             CheckAssemblyProperties(referenceMetadata, newMetadata);
 
-            foreach (var typeDefinition in referenceMetadata.TypeDefinitions.Select(referenceMetadata.GetTypeDefinition))
+            foreach (var typeDefinitionHandle in referenceMetadata.TypeDefinitions)
             {
+                TypeDefinition typeDefinition = referenceMetadata.GetTypeDefinition(typeDefinitionHandle);
+
                 if (!IsPubliclyVisible(referenceMetadata, typeDefinition))
                     continue;
 
                 if (IsMarkedPreliminary(referenceMetadata, typeDefinition))
                     continue;
 
+                Mapping<TypeDefinitionHandle> typeMapping = _referenceToNewMapping.MapTypeDefinition(typeDefinitionHandle);
+
                 // make sure the type still exists
-                TypeDefinition newTypeDefinition;
-                if (!TryMapTypeToNewAssembly(referenceMetadata, newMetadata, typeDefinition, out newTypeDefinition))
+                if (typeMapping.Target.IsNil)
                 {
                     _logger.Report(TypeMustNotBeRemoved.CreateMessage());
                     continue;
                 }
 
+                TypeDefinition newTypeDefinition = newMetadata.GetTypeDefinition(typeMapping.Target);
                 if ((typeDefinition.Attributes & TypeAttributes.Sealed) == 0)
                 {
                     if ((newTypeDefinition.Attributes & TypeAttributes.Sealed) == TypeAttributes.Sealed
@@ -84,8 +99,7 @@
                     switch (baseTypeHandle.Kind)
                     {
                     case HandleKind.TypeDefinition:
-                        TypeDefinition referenceBaseTypeDefinition = referenceMetadata.GetTypeDefinition((TypeDefinitionHandle)baseTypeHandle);
-                        CheckBaseType(referenceMetadata, newMetadata, referenceBaseTypeDefinition, (TypeDefinitionHandle)newBaseTypeHandle);
+                        CheckBaseType(referenceMetadata, newMetadata, (TypeDefinitionHandle)baseTypeHandle, (TypeDefinitionHandle)newBaseTypeHandle);
                         break;
 
                     case HandleKind.TypeReference:
@@ -128,28 +142,22 @@
                 }
 
                 // check fields
-                foreach (var fieldDefinition in typeDefinition.GetFields().Select(referenceMetadata.GetFieldDefinition))
+                foreach (var fieldDefinitionHandle in typeDefinition.GetFields())
                 {
+                    var fieldDefinition = referenceMetadata.GetFieldDefinition(fieldDefinitionHandle);
                     if (!IsPubliclyVisible(referenceMetadata, fieldDefinition))
                         continue;
 
-                    string referenceName = referenceMetadata.GetString(fieldDefinition.Name);
-
-                    FieldDefinitionHandle newFieldDefinitionHandle = default(FieldDefinitionHandle);
-                    foreach (var fieldDefinitionHandle in newTypeDefinition.GetFields())
+                    Mapping<FieldDefinitionHandle> fieldMapping = _referenceToNewMapping.MapFieldDefinition(fieldDefinitionHandle);
+                    if (fieldMapping.Target.IsNil)
                     {
-                        string newName = newMetadata.GetString(newMetadata.GetFieldDefinition(fieldDefinitionHandle).Name);
-                        if (string.Equals(referenceName, newName, StringComparison.Ordinal))
-                        {
-                            newFieldDefinitionHandle = fieldDefinitionHandle;
-                            break;
-                        }
+                        if (fieldMapping.CandidateTargets.IsDefaultOrEmpty)
+                            throw new NotImplementedException(string.Format("Publicly-visible field '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, fieldDefinition)));
+
+                        throw new NotImplementedException();
                     }
 
-                    if (newFieldDefinitionHandle.IsNil)
-                        throw new NotImplementedException(string.Format("Publicly-visible field '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, fieldDefinition)));
-
-                    FieldDefinition newFieldDefinition = newMetadata.GetFieldDefinition(newFieldDefinitionHandle);
+                    FieldDefinition newFieldDefinition = newMetadata.GetFieldDefinition(fieldMapping.Target);
                     if (fieldDefinition.Attributes != newFieldDefinition.Attributes)
                         throw new NotImplementedException("Attributes of publicly-visible field changed.");
 
@@ -229,28 +237,17 @@
                 }
 
                 // check events
-                foreach (var eventDefinition in typeDefinition.GetEvents().Select(referenceMetadata.GetEventDefinition))
+                foreach (var eventDefinitionHandle in typeDefinition.GetEvents())
                 {
+                    var eventDefinition = referenceMetadata.GetEventDefinition(eventDefinitionHandle);
                     if (!IsPubliclyVisible(referenceMetadata, eventDefinition))
                         continue;
 
-                    string referenceName = referenceMetadata.GetString(eventDefinition.Name);
-
-                    EventDefinitionHandle newEventDefinitionHandle = default(EventDefinitionHandle);
-                    foreach (var eventDefinitionHandle in newTypeDefinition.GetEvents())
-                    {
-                        string newName = newMetadata.GetString(newMetadata.GetEventDefinition(eventDefinitionHandle).Name);
-                        if (string.Equals(referenceName, newName, StringComparison.Ordinal))
-                        {
-                            newEventDefinitionHandle = eventDefinitionHandle;
-                            break;
-                        }
-                    }
-
-                    if (newEventDefinitionHandle.IsNil)
+                    Mapping<EventDefinitionHandle> eventDefinitionMapping = _referenceToNewMapping.MapEventDefinition(eventDefinitionHandle);
+                    if (eventDefinitionMapping.Target.IsNil)
                         throw new NotImplementedException(string.Format("Publicly-visible event '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, eventDefinition, typeDefinition)));
 
-                    EventDefinition newEventDefinition = newMetadata.GetEventDefinition(newEventDefinitionHandle);
+                    EventDefinition newEventDefinition = newMetadata.GetEventDefinition(eventDefinitionMapping.Target);
                     if (eventDefinition.Attributes != newEventDefinition.Attributes)
                         throw new NotImplementedException("Attributes of publicly-visible event changed.");
 
@@ -488,13 +485,13 @@
             return string.Format("{0}.{1}", typeName, propertyName);
         }
 
-        private void CheckBaseType(MetadataReader referenceMetadata, MetadataReader newMetadata, TypeDefinition referenceBaseTypeDefinition, TypeDefinitionHandle newBaseTypeDefinitionHandle)
+        private void CheckBaseType(MetadataReader referenceMetadata, MetadataReader newMetadata, TypeDefinitionHandle referenceBaseTypeHandle, TypeDefinitionHandle newBaseTypeDefinitionHandle)
         {
-            TypeDefinitionHandle mappedTypeDefinitionHandle;
-            if (!TryMapTypeToNewAssembly(referenceMetadata, newMetadata, referenceBaseTypeDefinition, out mappedTypeDefinitionHandle))
+            Mapping<TypeDefinitionHandle> mappedTypeDefinitionHandle = _referenceToNewMapping.MapTypeDefinition(referenceBaseTypeHandle);
+            if (mappedTypeDefinitionHandle.Target.IsNil)
                 throw new NotImplementedException("Base type no longer in assembly.");
 
-            if (mappedTypeDefinitionHandle != newBaseTypeDefinitionHandle)
+            if (mappedTypeDefinitionHandle.Target != newBaseTypeDefinitionHandle)
                 throw new NotImplementedException("Base type changed.");
         }
 
@@ -529,11 +526,11 @@
             switch (referenceTypeHandle.Kind)
             {
             case HandleKind.TypeDefinition:
-                TypeDefinitionHandle mappedTypeDefinitionHandle;
-                if (!TryMapTypeToNewAssembly(referenceMetadata, newMetadata, referenceMetadata.GetTypeDefinition((TypeDefinitionHandle)referenceTypeHandle), out mappedTypeDefinitionHandle))
+                Mapping<TypeDefinitionHandle> mappedTypeDefinitionHandle = _referenceToNewMapping.MapTypeDefinition((TypeDefinitionHandle)referenceTypeHandle);
+                if (mappedTypeDefinitionHandle.Target.IsNil)
                     return false;
 
-                return mappedTypeDefinitionHandle == (TypeDefinitionHandle)newTypeHandle;
+                return mappedTypeDefinitionHandle.Target == (TypeDefinitionHandle)newTypeHandle;
 
             case HandleKind.TypeReference:
                 TypeReference referenceTypeReference = referenceMetadata.GetTypeReference((TypeReferenceHandle)referenceTypeHandle);
@@ -1046,58 +1043,6 @@
         private bool IsMarkedPreliminary(MetadataReader metadataReader, TypeDefinition typeDefinition)
         {
             return false;
-        }
-
-        private bool TryMapTypeToNewAssembly(MetadataReader referenceMetadata, MetadataReader newMetadata, TypeDefinition referenceTypeDefinition, out TypeDefinitionHandle newTypeDefinitionHandle)
-        {
-            string referenceName = referenceMetadata.GetString(referenceTypeDefinition.Name);
-            string referenceNamespace = referenceMetadata.GetString(referenceTypeDefinition.Namespace);
-
-            foreach (var typeDefinitionHandle in newMetadata.TypeDefinitions)
-            {
-                var typeDefinition = newMetadata.GetTypeDefinition(typeDefinitionHandle);
-
-                string name = newMetadata.GetString(typeDefinition.Name);
-                if (!string.Equals(referenceName, name, StringComparison.Ordinal))
-                    continue;
-
-                string @namespace = newMetadata.GetString(typeDefinition.Namespace);
-                if (!string.Equals(referenceNamespace, @namespace, StringComparison.Ordinal))
-                    continue;
-
-                if (!typeDefinition.GetDeclaringType().IsNil)
-                {
-                    if (referenceTypeDefinition.GetDeclaringType().IsNil)
-                        continue;
-
-                    TypeDefinition referenceDeclaringTypeDefinition = referenceMetadata.GetTypeDefinition(referenceTypeDefinition.GetDeclaringType());
-                    TypeDefinitionHandle newDeclaringTypeDefinitionHandle;
-                    if (!TryMapTypeToNewAssembly(referenceMetadata, newMetadata, referenceDeclaringTypeDefinition, out newDeclaringTypeDefinitionHandle))
-                        continue;
-
-                    if (newDeclaringTypeDefinitionHandle != typeDefinition.GetDeclaringType())
-                        continue;
-                }
-
-                newTypeDefinitionHandle = typeDefinitionHandle;
-                return true;
-            }
-
-            newTypeDefinitionHandle = default(TypeDefinitionHandle);
-            return false;
-        }
-
-        private bool TryMapTypeToNewAssembly(MetadataReader referenceMetadata, MetadataReader newMetadata, TypeDefinition referenceTypeDefinition, out TypeDefinition newTypeDefinition)
-        {
-            TypeDefinitionHandle typeDefinitionHandle;
-            if (!TryMapTypeToNewAssembly(referenceMetadata, newMetadata, referenceTypeDefinition, out typeDefinitionHandle))
-            {
-                newTypeDefinition = default(TypeDefinition);
-                return false;
-            }
-
-            newTypeDefinition = newMetadata.GetTypeDefinition(typeDefinitionHandle);
-            return true;
         }
     }
 }
