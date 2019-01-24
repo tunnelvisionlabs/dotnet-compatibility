@@ -8,3 +8,4 @@ TestResults/
 *.sln.ide/
 *.user
 *.suo
+.vs/

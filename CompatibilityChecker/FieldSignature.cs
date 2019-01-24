@@ -13,10 +13,8 @@
             _reader = blobReader;
         }
 
-        public ImmutableArray<CustomModifierSignature> CustomModifiers
-        {
-            get
-            {
+        public ImmutableArray<CustomModifierSignature> CustomModifiers {
+            get {
                 var reader = _reader;
                 var header = reader.ReadSignatureHeader();
                 if (header.Kind != SignatureKind.Field)
@@ -34,10 +32,8 @@
             }
         }
 
-        public TypeSignature Type
-        {
-            get
-            {
+        public TypeSignature Type {
+            get {
                 var reader = _reader;
 
                 reader.ReadSignatureHeader();

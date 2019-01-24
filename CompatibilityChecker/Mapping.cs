@@ -25,18 +25,15 @@
             CandidateReasons = candidateReasons;
         }
 
-        public ImmutableArray<THandle> CandidateTargets
-        {
+        public ImmutableArray<THandle> CandidateTargets {
             get;
         }
 
-        public ImmutableArray<string> CandidateReasons
-        {
+        public ImmutableArray<string> CandidateReasons {
             get;
         }
 
-        public THandle Target
-        {
+        public THandle Target {
             get;
         }
 

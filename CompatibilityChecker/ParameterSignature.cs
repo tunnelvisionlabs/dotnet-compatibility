@@ -12,37 +12,29 @@
             _reader = blobReader;
         }
 
-        public ImmutableArray<CustomModifierSignature> CustomModifiers
-        {
-            get
-            {
+        public ImmutableArray<CustomModifierSignature> CustomModifiers {
+            get {
                 // this is always a restriction of RetType
                 return new ReturnTypeSignature(_reader).CustomModifiers;
             }
         }
 
-        public bool IsByRef
-        {
-            get
-            {
+        public bool IsByRef {
+            get {
                 // this is always a restriction of RetType
                 return new ReturnTypeSignature(_reader).IsByRef;
             }
         }
 
-        public SignatureTypeCode TypeCode
-        {
-            get
-            {
+        public SignatureTypeCode TypeCode {
+            get {
                 // this is always a restriction of RetType
                 return new ReturnTypeSignature(_reader).TypeCode;
             }
         }
 
-        public TypeSignature Type
-        {
-            get
-            {
+        public TypeSignature Type {
+            get {
                 // this is always a restriction of RetType
                 return new ReturnTypeSignature(_reader).Type;
             }

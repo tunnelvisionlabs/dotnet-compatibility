@@ -12,27 +12,21 @@
             _reader = blobReader;
         }
 
-        public SignatureTypeCode TypeCode
-        {
-            get
-            {
+        public SignatureTypeCode TypeCode {
+            get {
                 return _reader.ReadSignatureTypeCode();
             }
         }
 
-        public Handle TypeHandle
-        {
-            get
-            {
+        public Handle TypeHandle {
+            get {
                 // this particular case is identical to Type signature for valid TypeSpec signatures
                 return new TypeSignature(_reader).TypeHandle;
             }
         }
 
-        public ImmutableArray<TypeSignature> GenericTypeArguments
-        {
-            get
-            {
+        public ImmutableArray<TypeSignature> GenericTypeArguments {
+            get {
                 // this particular case is identical to Type signature for valid TypeSpec signatures
                 return new TypeSignature(_reader).GenericTypeArguments;
             }

@@ -23,33 +23,27 @@
             Description = description;
         }
 
-        public string RuleId
-        {
+        public string RuleId {
             get;
         }
 
-        public string Title
-        {
+        public string Title {
             get;
         }
 
-        public string MessageFormat
-        {
+        public string MessageFormat {
             get;
         }
 
-        public string Category
-        {
+        public string Category {
             get;
         }
 
-        public Severity DefaultSeverity
-        {
+        public Severity DefaultSeverity {
             get;
         }
 
-        public string Description
-        {
+        public string Description {
             get;
         }
     }

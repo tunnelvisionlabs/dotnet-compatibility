@@ -107,86 +107,86 @@
 
             switch (handle.Kind)
             {
-            case HandleKind.ModuleDefinition:
-                return (Mapping<Handle>)MapModuleDefinition((ModuleDefinitionHandle)handle);
+                case HandleKind.ModuleDefinition:
+                    return (Mapping<Handle>)MapModuleDefinition((ModuleDefinitionHandle)handle);
 
-            case HandleKind.TypeReference:
-                return (Mapping<Handle>)MapTypeReference((TypeReferenceHandle)handle);
+                case HandleKind.TypeReference:
+                    return (Mapping<Handle>)MapTypeReference((TypeReferenceHandle)handle);
 
-            case HandleKind.TypeDefinition:
-                return (Mapping<Handle>)MapTypeDefinition((TypeDefinitionHandle)handle);
+                case HandleKind.TypeDefinition:
+                    return (Mapping<Handle>)MapTypeDefinition((TypeDefinitionHandle)handle);
 
-            case HandleKind.FieldDefinition:
-                return (Mapping<Handle>)MapFieldDefinition((FieldDefinitionHandle)handle);
+                case HandleKind.FieldDefinition:
+                    return (Mapping<Handle>)MapFieldDefinition((FieldDefinitionHandle)handle);
 
-            case HandleKind.MethodDefinition:
-                return (Mapping<Handle>)MapMethodDefinition((MethodDefinitionHandle)handle);
+                case HandleKind.MethodDefinition:
+                    return (Mapping<Handle>)MapMethodDefinition((MethodDefinitionHandle)handle);
 
-            case HandleKind.Parameter:
-                return (Mapping<Handle>)MapParameter((ParameterHandle)handle);
+                case HandleKind.Parameter:
+                    return (Mapping<Handle>)MapParameter((ParameterHandle)handle);
 
-            case HandleKind.InterfaceImplementation:
-                return (Mapping<Handle>)MapInterfaceImplementation((InterfaceImplementationHandle)handle);
+                case HandleKind.InterfaceImplementation:
+                    return (Mapping<Handle>)MapInterfaceImplementation((InterfaceImplementationHandle)handle);
 
-            case HandleKind.MemberReference:
-                return (Mapping<Handle>)MapMemberReference((MemberReferenceHandle)handle);
+                case HandleKind.MemberReference:
+                    return (Mapping<Handle>)MapMemberReference((MemberReferenceHandle)handle);
 
-            case HandleKind.Constant:
-                return (Mapping<Handle>)MapConstant((ConstantHandle)handle);
+                case HandleKind.Constant:
+                    return (Mapping<Handle>)MapConstant((ConstantHandle)handle);
 
-            case HandleKind.CustomAttribute:
-                return (Mapping<Handle>)MapCustomAttribute((CustomAttributeHandle)handle);
+                case HandleKind.CustomAttribute:
+                    return (Mapping<Handle>)MapCustomAttribute((CustomAttributeHandle)handle);
 
-            case HandleKind.DeclarativeSecurityAttribute:
-                return (Mapping<Handle>)MapDeclarativeSecurityAttribute((DeclarativeSecurityAttributeHandle)handle);
+                case HandleKind.DeclarativeSecurityAttribute:
+                    return (Mapping<Handle>)MapDeclarativeSecurityAttribute((DeclarativeSecurityAttributeHandle)handle);
 
-            case HandleKind.StandaloneSignature:
-                return (Mapping<Handle>)MapStandaloneSignature((StandaloneSignatureHandle)handle);
+                case HandleKind.StandaloneSignature:
+                    return (Mapping<Handle>)MapStandaloneSignature((StandaloneSignatureHandle)handle);
 
-            case HandleKind.EventDefinition:
-                return (Mapping<Handle>)MapEventDefinition((EventDefinitionHandle)handle);
+                case HandleKind.EventDefinition:
+                    return (Mapping<Handle>)MapEventDefinition((EventDefinitionHandle)handle);
 
-            case HandleKind.PropertyDefinition:
-                return (Mapping<Handle>)MapPropertyDefinition((PropertyDefinitionHandle)handle);
+                case HandleKind.PropertyDefinition:
+                    return (Mapping<Handle>)MapPropertyDefinition((PropertyDefinitionHandle)handle);
 
-            case HandleKind.MethodImplementation:
-                return (Mapping<Handle>)MapMethodImplementation((MethodImplementationHandle)handle);
+                case HandleKind.MethodImplementation:
+                    return (Mapping<Handle>)MapMethodImplementation((MethodImplementationHandle)handle);
 
-            case HandleKind.ModuleReference:
-                return (Mapping<Handle>)MapModuleReference((ModuleReferenceHandle)handle);
+                case HandleKind.ModuleReference:
+                    return (Mapping<Handle>)MapModuleReference((ModuleReferenceHandle)handle);
 
-            case HandleKind.TypeSpecification:
-                return (Mapping<Handle>)MapTypeSpecification((TypeSpecificationHandle)handle);
+                case HandleKind.TypeSpecification:
+                    return (Mapping<Handle>)MapTypeSpecification((TypeSpecificationHandle)handle);
 
-            case HandleKind.AssemblyDefinition:
-                return (Mapping<Handle>)MapAssemblyDefinition((AssemblyDefinitionHandle)handle);
+                case HandleKind.AssemblyDefinition:
+                    return (Mapping<Handle>)MapAssemblyDefinition((AssemblyDefinitionHandle)handle);
 
-            case HandleKind.AssemblyFile:
-                return (Mapping<Handle>)MapAssemblyFile((AssemblyFileHandle)handle);
+                case HandleKind.AssemblyFile:
+                    return (Mapping<Handle>)MapAssemblyFile((AssemblyFileHandle)handle);
 
-            case HandleKind.AssemblyReference:
-                return (Mapping<Handle>)MapAssemblyReference((AssemblyReferenceHandle)handle);
+                case HandleKind.AssemblyReference:
+                    return (Mapping<Handle>)MapAssemblyReference((AssemblyReferenceHandle)handle);
 
-            case HandleKind.ExportedType:
-                return (Mapping<Handle>)MapExportedType((ExportedTypeHandle)handle);
+                case HandleKind.ExportedType:
+                    return (Mapping<Handle>)MapExportedType((ExportedTypeHandle)handle);
 
-            case HandleKind.GenericParameter:
-                return (Mapping<Handle>)MapGenericParameter((GenericParameterHandle)handle);
+                case HandleKind.GenericParameter:
+                    return (Mapping<Handle>)MapGenericParameter((GenericParameterHandle)handle);
 
-            case HandleKind.MethodSpecification:
-                return (Mapping<Handle>)MapMethodSpecification((MethodSpecificationHandle)handle);
+                case HandleKind.MethodSpecification:
+                    return (Mapping<Handle>)MapMethodSpecification((MethodSpecificationHandle)handle);
 
-            case HandleKind.GenericParameterConstraint:
-                return (Mapping<Handle>)MapGenericParameterConstraint((GenericParameterConstraintHandle)handle);
+                case HandleKind.GenericParameterConstraint:
+                    return (Mapping<Handle>)MapGenericParameterConstraint((GenericParameterConstraintHandle)handle);
 
-            case HandleKind.ManifestResource:
-                return (Mapping<Handle>)MapManifestResource((ManifestResourceHandle)handle);
+                case HandleKind.ManifestResource:
+                    return (Mapping<Handle>)MapManifestResource((ManifestResourceHandle)handle);
 
-            case HandleKind.NamespaceDefinition:
-                return (Mapping<Handle>)MapNamespaceDefinition((NamespaceDefinitionHandle)handle);
+                case HandleKind.NamespaceDefinition:
+                    return (Mapping<Handle>)MapNamespaceDefinition((NamespaceDefinitionHandle)handle);
 
-            default:
-                throw new NotSupportedException(string.Format("Mapping '{0}' handles between assemblies is not supported.", handle.Kind));
+                default:
+                    throw new NotSupportedException(string.Format("Mapping '{0}' handles between assemblies is not supported.", handle.Kind));
             }
         }
 
@@ -382,23 +382,23 @@
             ConstantHandle targetHandle;
             switch (parent.Target.Kind)
             {
-            case HandleKind.Parameter:
-                Parameter targetParameter = _targetMetadata.GetParameter((ParameterHandle)parent.Target);
-                targetHandle = targetParameter.GetDefaultValue();
-                break;
+                case HandleKind.Parameter:
+                    Parameter targetParameter = _targetMetadata.GetParameter((ParameterHandle)parent.Target);
+                    targetHandle = targetParameter.GetDefaultValue();
+                    break;
 
-            case HandleKind.FieldDefinition:
-                FieldDefinition targetFieldDefinition = _targetMetadata.GetFieldDefinition((FieldDefinitionHandle)parent.Target);
-                targetHandle = targetFieldDefinition.GetDefaultValue();
-                break;
+                case HandleKind.FieldDefinition:
+                    FieldDefinition targetFieldDefinition = _targetMetadata.GetFieldDefinition((FieldDefinitionHandle)parent.Target);
+                    targetHandle = targetFieldDefinition.GetDefaultValue();
+                    break;
 
-            case HandleKind.PropertyDefinition:
-                PropertyDefinition targetPropertyDefinition = _targetMetadata.GetPropertyDefinition((PropertyDefinitionHandle)parent.Target);
-                targetHandle = targetPropertyDefinition.GetDefaultValue();
-                break;
+                case HandleKind.PropertyDefinition:
+                    PropertyDefinition targetPropertyDefinition = _targetMetadata.GetPropertyDefinition((PropertyDefinitionHandle)parent.Target);
+                    targetHandle = targetPropertyDefinition.GetDefaultValue();
+                    break;
 
-            default:
-                throw new InvalidOperationException();
+                default:
+                    throw new InvalidOperationException();
             }
 
             if (targetHandle.IsNil)
@@ -553,78 +553,78 @@
 
             switch (sourceSignature.TypeCode)
             {
-            case SignatureTypeCode.Boolean:
-            case SignatureTypeCode.Char:
-            case SignatureTypeCode.SByte:
-            case SignatureTypeCode.Byte:
-            case SignatureTypeCode.Int16:
-            case SignatureTypeCode.UInt16:
-            case SignatureTypeCode.Int32:
-            case SignatureTypeCode.UInt32:
-            case SignatureTypeCode.Int64:
-            case SignatureTypeCode.UInt64:
-            case SignatureTypeCode.IntPtr:
-            case SignatureTypeCode.UIntPtr:
-            case SignatureTypeCode.Single:
-            case SignatureTypeCode.Double:
-                return null;
+                case SignatureTypeCode.Boolean:
+                case SignatureTypeCode.Char:
+                case SignatureTypeCode.SByte:
+                case SignatureTypeCode.Byte:
+                case SignatureTypeCode.Int16:
+                case SignatureTypeCode.UInt16:
+                case SignatureTypeCode.Int32:
+                case SignatureTypeCode.UInt32:
+                case SignatureTypeCode.Int64:
+                case SignatureTypeCode.UInt64:
+                case SignatureTypeCode.IntPtr:
+                case SignatureTypeCode.UIntPtr:
+                case SignatureTypeCode.Single:
+                case SignatureTypeCode.Double:
+                    return null;
 
-            case SignatureTypeCode.Object:
-            case SignatureTypeCode.String:
-                return null;
+                case SignatureTypeCode.Object:
+                case SignatureTypeCode.String:
+                    return null;
 
-            case SignatureTypeCode.Array:
-                throw new NotImplementedException(string.Format("{0} is not yet implemented.", sourceSignature.TypeCode));
+                case SignatureTypeCode.Array:
+                    throw new NotImplementedException(string.Format("{0} is not yet implemented.", sourceSignature.TypeCode));
 
-            case SignatureTypeCode.FunctionPointer:
-                throw new NotImplementedException(string.Format("{0} is not yet implemented.", sourceSignature.TypeCode));
+                case SignatureTypeCode.FunctionPointer:
+                    throw new NotImplementedException(string.Format("{0} is not yet implemented.", sourceSignature.TypeCode));
 
-            case SignatureTypeCode.GenericTypeInstance:
-                if (!IsSameHandle(sourceSignature.TypeHandle, targetSignature.TypeHandle))
-                    return "Unbound generic type does not match.";
+                case SignatureTypeCode.GenericTypeInstance:
+                    if (!IsSameHandle(sourceSignature.TypeHandle, targetSignature.TypeHandle))
+                        return "Unbound generic type does not match.";
 
-                ImmutableArray<TypeSignature> sourceGenericArguments = sourceSignature.GenericTypeArguments;
-                ImmutableArray<TypeSignature> targetGenericArguments = targetSignature.GenericTypeArguments;
-                if (sourceGenericArguments.Length != targetGenericArguments.Length)
-                    return "Generic arity does not match.";
+                    ImmutableArray<TypeSignature> sourceGenericArguments = sourceSignature.GenericTypeArguments;
+                    ImmutableArray<TypeSignature> targetGenericArguments = targetSignature.GenericTypeArguments;
+                    if (sourceGenericArguments.Length != targetGenericArguments.Length)
+                        return "Generic arity does not match.";
 
-                for (int i = 0; i < sourceGenericArguments.Length; i++)
-                {
-                    string genericParameterResult = CompareTypeSignatures(sourceGenericArguments[i], targetGenericArguments[i]);
-                    if (genericParameterResult != null)
-                        return string.Format("Generic parameter {0} does not match: {1}", i, genericParameterResult);
-                }
+                    for (int i = 0; i < sourceGenericArguments.Length; i++)
+                    {
+                        string genericParameterResult = CompareTypeSignatures(sourceGenericArguments[i], targetGenericArguments[i]);
+                        if (genericParameterResult != null)
+                            return string.Format("Generic parameter {0} does not match: {1}", i, genericParameterResult);
+                    }
 
-                return null;
+                    return null;
 
-            case SignatureTypeCode.GenericMethodParameter:
-            case SignatureTypeCode.GenericTypeParameter:
-                if (sourceSignature.GenericParameterIndex != targetSignature.GenericParameterIndex)
-                    return "Generic parameter index differs.";
+                case SignatureTypeCode.GenericMethodParameter:
+                case SignatureTypeCode.GenericTypeParameter:
+                    if (sourceSignature.GenericParameterIndex != targetSignature.GenericParameterIndex)
+                        return "Generic parameter index differs.";
 
-                return null;
+                    return null;
 
-            case SignatureTypeCode.TypeHandle:
-                throw new NotImplementedException(string.Format("{0} is not yet implemented.", sourceSignature.TypeCode));
+                case SignatureTypeCode.TypeHandle:
+                    throw new NotImplementedException(string.Format("{0} is not yet implemented.", sourceSignature.TypeCode));
                 //Handle referenceTypeHandle = sourceSignature.TypeHandle;
                 //Handle newTypeHandle = targetSignature.TypeHandle;
                 //return IsSameType(referenceMetadata, newMetadata, referenceTypeHandle, newTypeHandle);
 
-            case SignatureTypeCode.Pointer:
-                throw new NotImplementedException(string.Format("{0} is not yet implemented.", sourceSignature.TypeCode));
+                case SignatureTypeCode.Pointer:
+                    throw new NotImplementedException(string.Format("{0} is not yet implemented.", sourceSignature.TypeCode));
 
-            case SignatureTypeCode.SZArray:
-                if (!sourceSignature.CustomModifiers.IsEmpty || !targetSignature.CustomModifiers.IsEmpty)
-                    throw new NotImplementedException();
+                case SignatureTypeCode.SZArray:
+                    if (!sourceSignature.CustomModifiers.IsEmpty || !targetSignature.CustomModifiers.IsEmpty)
+                        throw new NotImplementedException();
 
-                string szArrayResult = CompareTypeSignatures(sourceSignature.ElementType, targetSignature.ElementType);
-                if (szArrayResult != null)
-                    szArrayResult = string.Format("SZArray element type mismatch: {0}", szArrayResult);
+                    string szArrayResult = CompareTypeSignatures(sourceSignature.ElementType, targetSignature.ElementType);
+                    if (szArrayResult != null)
+                        szArrayResult = string.Format("SZArray element type mismatch: {0}", szArrayResult);
 
-                return szArrayResult;
+                    return szArrayResult;
 
-            default:
-                throw new InvalidOperationException("Invalid signature type code.");
+                default:
+                    throw new InvalidOperationException("Invalid signature type code.");
             }
         }
 
@@ -753,7 +753,27 @@
 
         private Mapping<TypeReferenceHandle> MapTypeReferenceImpl(TypeReferenceHandle handle)
         {
-            throw new NotImplementedException();
+            MetadataReader referenceMetadata = _sourceMetadata;
+            MetadataReader newMetadata = _targetMetadata;
+            TypeReference referenceTypeReference = referenceMetadata.GetTypeReference(handle);
+
+            string referenceName = referenceMetadata.GetString(referenceTypeReference.Name);
+            string referenceNamespace = referenceMetadata.GetString(referenceTypeReference.Namespace);
+
+            foreach (var typeReferenceHandle in newMetadata.TypeReferences)
+            {
+                var typeReference = newMetadata.GetTypeReference(typeReferenceHandle);
+
+                if (!newMetadata.StringComparer.Equals(typeReference.Name, referenceName))
+                    continue;
+
+                if (!newMetadata.StringComparer.Equals(typeReference.Namespace, referenceNamespace))
+                    continue;                
+
+                return new Mapping<TypeReferenceHandle>(typeReferenceHandle);
+            }
+
+            return new Mapping<TypeReferenceHandle>();
         }
 
         private Mapping<TypeSpecificationHandle> MapTypeSpecificationImpl(TypeSpecificationHandle handle)

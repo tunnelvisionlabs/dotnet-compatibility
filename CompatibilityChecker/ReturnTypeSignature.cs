@@ -13,10 +13,8 @@
             _reader = blobReader;
         }
 
-        public ImmutableArray<CustomModifierSignature> CustomModifiers
-        {
-            get
-            {
+        public ImmutableArray<CustomModifierSignature> CustomModifiers {
+            get {
                 var reader = _reader;
                 var builder = ImmutableArray.CreateBuilder<CustomModifierSignature>();
                 while (reader.IsCustomModifier())
@@ -30,10 +28,8 @@
             }
         }
 
-        public bool IsByRef
-        {
-            get
-            {
+        public bool IsByRef {
+            get {
                 var reader = _reader;
                 while (reader.IsCustomModifier())
                     reader = new CustomModifierSignature(reader).Skip();
@@ -42,66 +38,58 @@
             }
         }
 
-        public SignatureTypeCode TypeCode
-        {
-            get
-            {
+        public SignatureTypeCode TypeCode {
+            get {
                 var reader = _reader;
                 while (reader.IsCustomModifier())
                     reader = new CustomModifierSignature(reader).Skip();
 
                 switch (reader.PeekSignatureTypeCode())
                 {
-                case SignatureTypeCode.TypedReference:
-                case SignatureTypeCode.Void:
-                    return reader.PeekSignatureTypeCode();
+                    case SignatureTypeCode.TypedReference:
+                    case SignatureTypeCode.Void:
+                        return reader.PeekSignatureTypeCode();
 
-                case SignatureTypeCode.ByReference:
-                    reader.ReadSignatureTypeCode();
-                    goto default;
+                    case SignatureTypeCode.ByReference:
+                        reader.ReadSignatureTypeCode();
+                        goto default;
 
-                default:
-                    return new TypeSignature(reader).TypeCode;
+                    default:
+                        return new TypeSignature(reader).TypeCode;
                 }
             }
         }
 
-        public bool IsTypedByRef
-        {
-            get
-            {
+        public bool IsTypedByRef {
+            get {
                 return TypeCode == SignatureTypeCode.TypedReference;
             }
         }
 
-        public bool IsVoid
-        {
-            get
-            {
+        public bool IsVoid {
+            get {
                 return TypeCode == SignatureTypeCode.Void;
             }
         }
 
-        public TypeSignature Type
-        {
-            get
-            {
+        public TypeSignature Type {
+            get {
                 var reader = _reader;
                 while (reader.IsCustomModifier())
                     reader = new CustomModifierSignature(reader).Skip();
 
                 switch (reader.PeekSignatureTypeCode())
                 {
-                case SignatureTypeCode.ByReference:
-                    reader.ReadSignatureTypeCode();
-                    return new TypeSignature(reader);
+                    case SignatureTypeCode.ByReference:
+                        reader.ReadSignatureTypeCode();
+                        return new TypeSignature(reader);
 
-                case SignatureTypeCode.TypedReference:
-                case SignatureTypeCode.Void:
-                    throw new InvalidOperationException(string.Format("RetType signatures with type code {0} do not have a Type signature.", reader.PeekSignatureTypeCode()));
+                    case SignatureTypeCode.TypedReference:
+                    case SignatureTypeCode.Void:
+                        throw new InvalidOperationException(string.Format("RetType signatures with type code {0} do not have a Type signature.", reader.PeekSignatureTypeCode()));
 
-                default:
-                    return new TypeSignature(reader);
+                    default:
+                        return new TypeSignature(reader);
                 }
             }
         }
@@ -114,18 +102,18 @@
 
             switch (reader.PeekSignatureTypeCode())
             {
-            case SignatureTypeCode.ByReference:
-                reader.ReadSignatureTypeCode();
-                goto default;
+                case SignatureTypeCode.ByReference:
+                    reader.ReadSignatureTypeCode();
+                    goto default;
 
-            case SignatureTypeCode.TypedReference:
-            case SignatureTypeCode.Void:
-                reader.ReadSignatureTypeCode();
-                break;
+                case SignatureTypeCode.TypedReference:
+                case SignatureTypeCode.Void:
+                    reader.ReadSignatureTypeCode();
+                    break;
 
-            default:
-                reader = new TypeSignature(reader).Skip();
-                break;
+                default:
+                    reader = new TypeSignature(reader).Skip();
+                    break;
             }
 
             return reader;

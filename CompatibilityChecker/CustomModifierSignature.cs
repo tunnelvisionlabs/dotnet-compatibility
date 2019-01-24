@@ -11,18 +11,14 @@
             _reader = blobReader;
         }
 
-        public bool IsRequired
-        {
-            get
-            {
+        public bool IsRequired {
+            get {
                 return _reader.ReadSignatureTypeCode() == SignatureTypeCode.RequiredModifier;
             }
         }
 
-        public Handle TypeHandle
-        {
-            get
-            {
+        public Handle TypeHandle {
+            get {
                 BlobReader reader = _reader;
                 reader.ReadSignatureTypeCode();
                 return reader.ReadTypeHandle();

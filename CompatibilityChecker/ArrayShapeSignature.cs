@@ -12,18 +12,14 @@
             _reader = blobReader;
         }
 
-        public int Rank
-        {
-            get
-            {
+        public int Rank {
+            get {
                 return _reader.ReadCompressedInteger();
             }
         }
 
-        public ImmutableArray<int> Lengths
-        {
-            get
-            {
+        public ImmutableArray<int> Lengths {
+            get {
                 BlobReader reader = _reader;
 
                 // rank
@@ -39,10 +35,8 @@
             }
         }
 
-        public ImmutableArray<int> LowerBounds
-        {
-            get
-            {
+        public ImmutableArray<int> LowerBounds {
+            get {
                 BlobReader reader = _reader;
 
                 // rank

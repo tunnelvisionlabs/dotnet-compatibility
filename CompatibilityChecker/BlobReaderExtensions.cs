@@ -8,12 +8,12 @@
         {
             switch (blobReader.ReadSignatureTypeCode())
             {
-            case SignatureTypeCode.OptionalModifier:
-            case SignatureTypeCode.RequiredModifier:
-                return true;
+                case SignatureTypeCode.OptionalModifier:
+                case SignatureTypeCode.RequiredModifier:
+                    return true;
 
-            default:
-                return false;
+                default:
+                    return false;
             }
         }
 

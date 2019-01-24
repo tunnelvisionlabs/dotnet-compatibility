@@ -16,10 +16,8 @@
             _reader = blobReader;
         }
 
-        public SignatureTypeCode TypeCode
-        {
-            get
-            {
+        public SignatureTypeCode TypeCode {
+            get {
                 return _reader.ReadSignatureTypeCode();
             }
         }
@@ -31,21 +29,19 @@
         /// <para>If <see cref="TypeCode"/> is not <see cref="SignatureTypeCode.GenericTypeParameter"/> or
         /// <see cref="SignatureTypeCode.GenericMethodParameter"/>.</para>
         /// </exception>
-        public int GenericParameterIndex
-        {
-            get
-            {
+        public int GenericParameterIndex {
+            get {
                 BlobReader reader = _reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
 
                 switch (typeCode)
                 {
-                case SignatureTypeCode.GenericMethodParameter:
-                case SignatureTypeCode.GenericTypeParameter:
-                    return reader.ReadCompressedInteger();
+                    case SignatureTypeCode.GenericMethodParameter:
+                    case SignatureTypeCode.GenericTypeParameter:
+                        return reader.ReadCompressedInteger();
 
-                default:
-                    throw new InvalidOperationException("Only generic parameters have a generic parameter index.");
+                    default:
+                        throw new InvalidOperationException("Only generic parameters have a generic parameter index.");
                 }
             }
         }
@@ -57,32 +53,28 @@
         /// <para>If <see cref="TypeCode"/> is not <see cref="SignatureTypeCode.TypeHandle"/> or
         /// <see cref="SignatureTypeCode.GenericTypeInstance"/>.</para>
         /// </exception>
-        public Handle TypeHandle
-        {
-            get
-            {
+        public Handle TypeHandle {
+            get {
                 BlobReader reader = _reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
 
                 switch (typeCode)
                 {
-                case SignatureTypeCode.TypeHandle:
-                    return reader.ReadTypeHandle();
+                    case SignatureTypeCode.TypeHandle:
+                        return reader.ReadTypeHandle();
 
-                case SignatureTypeCode.GenericTypeInstance:
-                    reader.ReadSignatureTypeCode();
-                    return reader.ReadTypeHandle();
+                    case SignatureTypeCode.GenericTypeInstance:
+                        reader.ReadSignatureTypeCode();
+                        return reader.ReadTypeHandle();
 
-                default:
-                    throw new InvalidOperationException(string.Format("Type code '{0}' does not have a type handle.", typeCode));
+                    default:
+                        throw new InvalidOperationException(string.Format("Type code '{0}' does not have a type handle.", typeCode));
                 }
             }
         }
 
-        public ImmutableArray<TypeSignature> GenericTypeArguments
-        {
-            get
-            {
+        public ImmutableArray<TypeSignature> GenericTypeArguments {
+            get {
                 BlobReader reader = _reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
                 if (typeCode != SignatureTypeCode.GenericTypeInstance)
@@ -104,21 +96,19 @@
             }
         }
 
-        public ImmutableArray<CustomModifierSignature> CustomModifiers
-        {
-            get
-            {
+        public ImmutableArray<CustomModifierSignature> CustomModifiers {
+            get {
                 BlobReader reader = _reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
 
                 switch (typeCode)
                 {
-                case SignatureTypeCode.Pointer:
-                case SignatureTypeCode.SZArray:
-                    break;
+                    case SignatureTypeCode.Pointer:
+                    case SignatureTypeCode.SZArray:
+                        break;
 
-                default:
-                    throw new InvalidOperationException(string.Format("Type code '{0}' does not have custom modifiers.", typeCode));
+                    default:
+                        throw new InvalidOperationException(string.Format("Type code '{0}' does not have custom modifiers.", typeCode));
                 }
 
                 var builder = ImmutableArray.CreateBuilder<CustomModifierSignature>();
@@ -133,73 +123,67 @@
             }
         }
 
-        public TypeSignature ElementType
-        {
-            get
-            {
+        public TypeSignature ElementType {
+            get {
                 BlobReader reader = _reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
 
                 switch (typeCode)
                 {
-                case SignatureTypeCode.Array:
-                    return new TypeSignature(reader);
+                    case SignatureTypeCode.Array:
+                        return new TypeSignature(reader);
 
-                case SignatureTypeCode.Pointer:
-                    while (reader.IsCustomModifier())
-                        reader = new CustomModifierSignature(reader).Skip();
+                    case SignatureTypeCode.Pointer:
+                        while (reader.IsCustomModifier())
+                            reader = new CustomModifierSignature(reader).Skip();
 
-                    if (reader.PeekSignatureTypeCode() == SignatureTypeCode.Void)
-                        goto default;
+                        if (reader.PeekSignatureTypeCode() == SignatureTypeCode.Void)
+                            goto default;
 
-                    return new TypeSignature(reader);
+                        return new TypeSignature(reader);
 
-                case SignatureTypeCode.SZArray:
-                    while (reader.IsCustomModifier())
-                        reader = new CustomModifierSignature(reader).Skip();
+                    case SignatureTypeCode.SZArray:
+                        while (reader.IsCustomModifier())
+                            reader = new CustomModifierSignature(reader).Skip();
 
-                    return new TypeSignature(reader);
+                        return new TypeSignature(reader);
 
-                default:
-                    throw new InvalidOperationException(string.Format("Type code '{0}' does not have an element type.", typeCode));
+                    default:
+                        throw new InvalidOperationException(string.Format("Type code '{0}' does not have an element type.", typeCode));
                 }
             }
         }
 
-        public ArrayShapeSignature ArrayShape
-        {
-            get
-            {
+        public ArrayShapeSignature ArrayShape {
+            get {
                 BlobReader reader = _reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
 
                 switch (typeCode)
                 {
-                case SignatureTypeCode.Array:
-                    // skip past the type and return the array shape
-                    reader = new TypeSignature(reader).Skip();
-                    return new ArrayShapeSignature(reader);
+                    case SignatureTypeCode.Array:
+                        // skip past the type and return the array shape
+                        reader = new TypeSignature(reader).Skip();
+                        return new ArrayShapeSignature(reader);
 
-                default:
-                    throw new InvalidOperationException(string.Format("Type code '{0}' does not have an array shape signature.", typeCode));
+                    default:
+                        throw new InvalidOperationException(string.Format("Type code '{0}' does not have an array shape signature.", typeCode));
                 }
             }
         }
 
-        public MethodSignature MethodSignature
-        {
-            get
-            {
+        public MethodSignature MethodSignature {
+            get {
                 BlobReader reader = _reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
 
                 switch (typeCode)
                 {
-                case SignatureTypeCode.FunctionPointer:
-                    return new MethodSignature(reader);
+                    case SignatureTypeCode.FunctionPointer:
+                        return new MethodSignature(reader);
 
-                default:
-                    throw new InvalidOperationException(string.Format("Type code '{0}' does not have a method signature.", typeCode));
+                    default:
+                        throw new InvalidOperationException(string.Format("Type code '{0}' does not have a method signature.", typeCode));
                 }
             }
         }
@@ -211,74 +195,74 @@
 
             switch (typeCode)
             {
-            case SignatureTypeCode.Boolean:
-            case SignatureTypeCode.Char:
-            case SignatureTypeCode.SByte:
-            case SignatureTypeCode.Byte:
-            case SignatureTypeCode.Int16:
-            case SignatureTypeCode.UInt16:
-            case SignatureTypeCode.Int32:
-            case SignatureTypeCode.UInt32:
-            case SignatureTypeCode.Int64:
-            case SignatureTypeCode.UInt64:
-            case SignatureTypeCode.IntPtr:
-            case SignatureTypeCode.UIntPtr:
-            case SignatureTypeCode.Single:
-            case SignatureTypeCode.Double:
-                break;
+                case SignatureTypeCode.Boolean:
+                case SignatureTypeCode.Char:
+                case SignatureTypeCode.SByte:
+                case SignatureTypeCode.Byte:
+                case SignatureTypeCode.Int16:
+                case SignatureTypeCode.UInt16:
+                case SignatureTypeCode.Int32:
+                case SignatureTypeCode.UInt32:
+                case SignatureTypeCode.Int64:
+                case SignatureTypeCode.UInt64:
+                case SignatureTypeCode.IntPtr:
+                case SignatureTypeCode.UIntPtr:
+                case SignatureTypeCode.Single:
+                case SignatureTypeCode.Double:
+                    break;
 
-            case SignatureTypeCode.Object:
-            case SignatureTypeCode.String:
-                break;
+                case SignatureTypeCode.Object:
+                case SignatureTypeCode.String:
+                    break;
 
-            case SignatureTypeCode.Array:
-                reader = new TypeSignature(reader).Skip();
-                reader = new ArrayShapeSignature(reader).Skip();
-                break;
-
-            case SignatureTypeCode.FunctionPointer:
-                throw new NotImplementedException(string.Format("{0} is not yet implemented.", typeCode));
-
-            case SignatureTypeCode.GenericTypeInstance:
-                reader.ReadSignatureTypeCode();
-                reader.ReadTypeHandle();
-
-                int argumentCount = reader.ReadCompressedInteger();
-                for (int i = 0; i < argumentCount; i++)
+                case SignatureTypeCode.Array:
                     reader = new TypeSignature(reader).Skip();
+                    reader = new ArrayShapeSignature(reader).Skip();
+                    break;
 
-                break;
+                case SignatureTypeCode.FunctionPointer:
+                    throw new NotImplementedException(string.Format("{0} is not yet implemented.", typeCode));
 
-            case SignatureTypeCode.GenericMethodParameter:
-            case SignatureTypeCode.GenericTypeParameter:
-                // skip the generic parameter index
-                reader.ReadCompressedInteger();
-                break;
-
-            case SignatureTypeCode.TypeHandle:
-                reader.ReadTypeHandle();
-                break;
-
-            case SignatureTypeCode.Pointer:
-                while (reader.IsCustomModifier())
-                    reader = new CustomModifierSignature(reader).Skip();
-
-                if (reader.PeekSignatureTypeCode() == SignatureTypeCode.Void)
+                case SignatureTypeCode.GenericTypeInstance:
                     reader.ReadSignatureTypeCode();
-                else
+                    reader.ReadTypeHandle();
+
+                    int argumentCount = reader.ReadCompressedInteger();
+                    for (int i = 0; i < argumentCount; i++)
+                        reader = new TypeSignature(reader).Skip();
+
+                    break;
+
+                case SignatureTypeCode.GenericMethodParameter:
+                case SignatureTypeCode.GenericTypeParameter:
+                    // skip the generic parameter index
+                    reader.ReadCompressedInteger();
+                    break;
+
+                case SignatureTypeCode.TypeHandle:
+                    reader.ReadTypeHandle();
+                    break;
+
+                case SignatureTypeCode.Pointer:
+                    while (reader.IsCustomModifier())
+                        reader = new CustomModifierSignature(reader).Skip();
+
+                    if (reader.PeekSignatureTypeCode() == SignatureTypeCode.Void)
+                        reader.ReadSignatureTypeCode();
+                    else
+                        reader = new TypeSignature(reader).Skip();
+
+                    break;
+
+                case SignatureTypeCode.SZArray:
+                    while (reader.IsCustomModifier())
+                        reader = new CustomModifierSignature(reader).Skip();
+
                     reader = new TypeSignature(reader).Skip();
+                    break;
 
-                break;
-
-            case SignatureTypeCode.SZArray:
-                while (reader.IsCustomModifier())
-                    reader = new CustomModifierSignature(reader).Skip();
-
-                reader = new TypeSignature(reader).Skip();
-                break;
-
-            default:
-                throw new InvalidOperationException("Invalid signature type code.");
+                default:
+                    throw new InvalidOperationException("Invalid signature type code.");
             }
 
             return reader;

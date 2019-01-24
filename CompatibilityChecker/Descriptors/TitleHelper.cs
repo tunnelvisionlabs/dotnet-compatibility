@@ -1,6 +1,5 @@
 ﻿namespace CompatibilityChecker.Descriptors
 {
-    using System;
     using System.Text;
 
     internal static class TitleHelper

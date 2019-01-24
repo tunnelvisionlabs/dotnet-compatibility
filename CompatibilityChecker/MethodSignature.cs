@@ -17,18 +17,14 @@
             _reader = blobReader;
         }
 
-        public SignatureHeader Header
-        {
-            get
-            {
+        public SignatureHeader Header {
+            get {
                 return _reader.ReadSignatureHeader();
             }
         }
 
-        public int GenericParameterCount
-        {
-            get
-            {
+        public int GenericParameterCount {
+            get {
                 BlobReader reader = _reader;
                 var header = reader.ReadSignatureHeader();
 
@@ -39,10 +35,8 @@
             }
         }
 
-        public ReturnTypeSignature ReturnType
-        {
-            get
-            {
+        public ReturnTypeSignature ReturnType {
+            get {
                 BlobReader reader = _reader;
                 var header = reader.ReadSignatureHeader();
 
@@ -57,10 +51,8 @@
             }
         }
 
-        public ImmutableArray<ParameterSignature> Parameters
-        {
-            get
-            {
+        public ImmutableArray<ParameterSignature> Parameters {
+            get {
                 BlobReader reader = _reader;
                 var header = reader.ReadSignatureHeader();
 

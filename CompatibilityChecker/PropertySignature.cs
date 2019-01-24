@@ -12,18 +12,14 @@
             _reader = blobReader;
         }
 
-        public SignatureHeader Header
-        {
-            get
-            {
+        public SignatureHeader Header {
+            get {
                 return _reader.ReadSignatureHeader();
             }
         }
 
-        public ImmutableArray<CustomModifierSignature> CustomModifiers
-        {
-            get
-            {
+        public ImmutableArray<CustomModifierSignature> CustomModifiers {
+            get {
                 var reader = _reader;
 
                 // signature header
@@ -44,10 +40,8 @@
             }
         }
 
-        public TypeSignature PropertyType
-        {
-            get
-            {
+        public TypeSignature PropertyType {
+            get {
                 BlobReader reader = _reader;
 
                 // header
@@ -63,10 +57,8 @@
             }
         }
 
-        public ImmutableArray<ParameterSignature> Parameters
-        {
-            get
-            {
+        public ImmutableArray<ParameterSignature> Parameters {
+            get {
                 BlobReader reader = _reader;
                 reader.ReadSignatureHeader();
 
