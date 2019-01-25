@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CompatibilityCheckerCore\CompatibilityChecker.csproj" />
+    <ProjectReference Include="..\CompatibilityChecker\CompatibilityChecker.csproj" />
   </ItemGroup>
 
 </Project>

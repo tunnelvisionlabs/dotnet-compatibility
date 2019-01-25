@@ -4,22 +4,20 @@
     using System.Runtime.CompilerServices;
 
     /// <summary>
-    /// Publicly-accessible types cannot be removed. This includes renaming a type or changing the namespace of a type.
-    /// An exception to this rule applies for moving a type to another assembly, provided a
-    /// <see cref="TypeForwardedToAttribute"/> attribute is applied to the original assembly.
+    /// Base types cannot be changed. This includes renaming a type or changing the namespace of a type.
     /// </summary>
-    internal class TypeMustNotBeRemoved : CompatibilityDescriptor
+    internal class BaseTypeMustNotChange : CompatibilityDescriptor
     {
-        private const string Id = nameof(TypeMustNotBeRemoved);
+        private const string Id = nameof(BaseTypeMustNotChange);
         private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "Publicly-accessible type '{0}' cannot be removed.";
+        private static readonly string _messageFormat = "Base type of '{0}' must not be changed.";
         private static readonly string _category = Categories.Type;
         private static readonly Severity _defaultSeverity = Severity.Error;
         private static readonly string _description = null;
 
-        private static readonly TypeMustNotBeRemoved Instance = new TypeMustNotBeRemoved();
+        private static readonly BaseTypeMustNotChange Instance = new BaseTypeMustNotChange();
 
-        private TypeMustNotBeRemoved()
+        private BaseTypeMustNotChange()
             : base(Id, _title, _messageFormat, _category, _defaultSeverity, _description)
         {
         }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CompatibilityCheckerCoreExample": {
+      "commandName": "Project",
+      "commandLineArgs": "\"F:\\Users\\Erwin\\Documents\\GitHub\\dotnet-compatibility\\MediaBrowser.Common.10.0.1.dll\" \"F:\\Users\\Erwin\\Documents\\GitHub\\dotnet-compatibility\\MediaBrowser.Common.10.1.0.dll\""
+    }
+  }
+}

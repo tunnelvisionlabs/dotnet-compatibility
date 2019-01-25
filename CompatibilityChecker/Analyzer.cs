@@ -55,7 +55,7 @@
                 // make sure the type still exists
                 if (typeMapping.Target.IsNil)
                 {
-                    _logger.Report(TypeMustNotBeRemoved.CreateMessage());
+                    _logger.Report(TypeMustNotBeRemoved.CreateMessage(GetMetadataName(referenceMetadata, typeDefinition)));
                     continue;
                 }
 
@@ -91,10 +91,10 @@
                 {
                     Handle newBaseTypeHandle = newTypeDefinition.BaseType;
                     if (newBaseTypeHandle.IsNil)
-                        _logger.Report(OtherError.CreateMessage("Base type changed.")); // throw new NotImplementedException("Base type changed.");
+                        _logger.Report(BaseTypeMustNotChange.CreateMessage(GetMetadataName(referenceMetadata, typeDefinition))); // throw new NotImplementedException("Base type changed.");
 
                     if (baseTypeHandle.Kind != newBaseTypeHandle.Kind)
-                        _logger.Report(OtherError.CreateMessage("Base type changed.")); // throw new NotImplementedException("Base type changed.");
+                        _logger.Report(BaseTypeMustNotChange.CreateMessage(GetMetadataName(referenceMetadata, typeDefinition))); // throw new NotImplementedException("Base type changed.");
 
                     switch (baseTypeHandle.Kind)
                     {
@@ -138,7 +138,7 @@
                     }
 
                     if (!foundMatchingInterface)
-                        _logger.Report(OtherError.CreateMessage("Implemented interface was removed from a type.")); // throw new NotImplementedException("Implemented interface was removed from a type.");
+                        _logger.Report(ImplementedInterfaceMustNotBeRemoved.CreateMessage(GetMetadataName(referenceMetadata, typeDefinition), GetMetadataName(referenceMetadata, interfaceImplementation))); // throw new NotImplementedException("Implemented interface was removed from a type.");
                 }
 
                 // check fields
@@ -152,14 +152,14 @@
                     if (fieldMapping.Target.IsNil)
                     {
                         if (fieldMapping.CandidateTargets.IsDefaultOrEmpty)
-                            _logger.Report(OtherError.CreateMessage(string.Format("Publicly-visible field '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, fieldDefinition)))); //throw new NotImplementedException(string.Format("Publicly-visible field '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, fieldDefinition)));
+                            _logger.Report(FieldMustNotBeChanged.CreateMessage(GetMetadataName(referenceMetadata, fieldDefinition))); //throw new NotImplementedException(string.Format("Publicly-visible field '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, fieldDefinition)));
 
                         //throw new NotImplementedException();
                     }
 
                     FieldDefinition newFieldDefinition = newMetadata.GetFieldDefinition(fieldMapping.Target);
                     if (fieldDefinition.Attributes != newFieldDefinition.Attributes)
-                        _logger.Report(OtherError.CreateMessage("Attributes of publicly-visible field changed.")); // throw new NotImplementedException("Attributes of publicly-visible field changed.");
+                        _logger.Report(FieldAttributesMustNotBeChanged.CreateMessage(GetMetadataName(referenceMetadata, fieldDefinition))); // throw new NotImplementedException("Attributes of publicly-visible field changed.");
 
                     if (!IsSameFieldSignature(referenceMetadata, newMetadata, referenceMetadata.GetSignature(fieldDefinition), newMetadata.GetSignature(newFieldDefinition)))
                         _logger.Report(OtherError.CreateMessage("Signature of publicly-accessible field changed.")); // throw new NotImplementedException("Signature of publicly-accessible field changed.");
@@ -208,7 +208,7 @@
                     }
 
                     if (newMethodDefinitions.Count == 0)
-                        _logger.Report(OtherError.CreateMessage(string.Format("Publicly-visible method '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, methodDefinition)))); //throw new NotImplementedException(string.Format("Publicly-visible method '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, methodDefinition)));
+                        _logger.Report(MethodMustNotBeChanged.CreateMessage(GetMetadataName(referenceMetadata, methodDefinition))); //throw new NotImplementedException(string.Format("Publicly-visible method '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, methodDefinition)));
 
                     bool foundMethodDefinition = false;
                     foreach (var newMethodDefinition in newMethodDefinitions)
@@ -219,14 +219,14 @@
                             continue;
 
                         if (methodDefinition.Attributes != newMethodDefinition.Attributes)
-                            _logger.Report(OtherError.CreateMessage("Attributes of publicly-visible method changed.")); // throw new NotImplementedException("Attributes of publicly-visible method changed.");
+                            _logger.Report(MethodAttributesMustNotBeChanged.CreateMessage(GetMetadataName(referenceMetadata, methodDefinition))); // throw new NotImplementedException("Attributes of publicly-visible method changed.");
 
                         foundMethodDefinition = true;
                         break;
                     }
 
                     if (!foundMethodDefinition)
-                        _logger.Report(OtherError.CreateMessage(string.Format("Publicly-visible method '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, methodDefinition)))); //throw new NotImplementedException(string.Format("Publicly-visible method '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, methodDefinition)));
+                        _logger.Report(MethodMustNotBeChanged.CreateMessage(GetMetadataName(referenceMetadata, methodDefinition))); //throw new NotImplementedException(string.Format("Publicly-visible method '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, methodDefinition)));
                 }
 
                 // If the type is an interface, additionally make sure the number of methods did not change.
@@ -245,14 +245,14 @@
 
                     Mapping<EventDefinitionHandle> eventDefinitionMapping = _referenceToNewMapping.MapEventDefinition(eventDefinitionHandle);
                     if (eventDefinitionMapping.Target.IsNil)
-                        _logger.Report(OtherError.CreateMessage(string.Format("Publicly-visible event '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, eventDefinition, typeDefinition)))); //throw new NotImplementedException(string.Format("Publicly-visible event '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, eventDefinition, typeDefinition)));
+                        _logger.Report(EventMustNotBeRemoved.CreateMessage(GetMetadataName(referenceMetadata, eventDefinition, typeDefinition))); //throw new NotImplementedException(string.Format("Publicly-visible event '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, eventDefinition, typeDefinition)));
 
                     EventDefinition newEventDefinition = newMetadata.GetEventDefinition(eventDefinitionMapping.Target);
                     if (eventDefinition.Attributes != newEventDefinition.Attributes)
-                        _logger.Report(OtherError.CreateMessage("Attributes of publicly-visible event changed.")); // throw new NotImplementedException("Attributes of publicly-visible event changed.");
+                        _logger.Report(EventAttributesMustNotBeChanged.CreateMessage(GetMetadataName(referenceMetadata, eventDefinition, typeDefinition))); // throw new NotImplementedException("Attributes of publicly-visible event changed.");
 
                     if (!IsSameType(referenceMetadata, newMetadata, eventDefinition.Type, newEventDefinition.Type))
-                        _logger.Report(OtherError.CreateMessage("Signature of publicly-visible event changed.")); // throw new NotImplementedException("Signature of publicly-visible event changed.");
+                        _logger.Report(EventSignatureMustNotBeChanged.CreateMessage(GetMetadataName(referenceMetadata, eventDefinition, typeDefinition))); // throw new NotImplementedException("Signature of publicly-visible event changed.");
 
                     EventAccessors eventAccessors = eventDefinition.GetAccessors();
 
@@ -453,6 +453,20 @@
                 string name = metadataReader.GetString(typeDefinition.Name);
                 return string.Format("{0}+{1}", declaringTypeName, name);
             }
+        }
+
+        private string GetMetadataName(MetadataReader metadataReader, InterfaceImplementation interfaceImplementation)
+        {            
+            var interfaceNamespaceName = "Unknown";
+            var interfaceName = "Interface";
+            if (interfaceImplementation.Interface.Kind == HandleKind.TypeDefinition)
+            {
+                TypeDefinition interfaceImplementationTypeDefinition = metadataReader.GetTypeDefinition((TypeDefinitionHandle)interfaceImplementation.Interface);
+
+                interfaceNamespaceName = metadataReader.GetString(interfaceImplementationTypeDefinition.Namespace);
+                interfaceName = metadataReader.GetString(interfaceImplementationTypeDefinition.Name);
+            }
+            return string.Format("{0}.{1}", interfaceNamespaceName, interfaceName);
         }
 
         private string GetMetadataName(MetadataReader metadataReader, FieldDefinition fieldDefinition)

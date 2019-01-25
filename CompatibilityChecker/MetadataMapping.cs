@@ -605,10 +605,10 @@
                     return null;
 
                 case SignatureTypeCode.TypeHandle:
-                    throw new NotImplementedException(string.Format("{0} is not yet implemented.", sourceSignature.TypeCode));
-                //Handle referenceTypeHandle = sourceSignature.TypeHandle;
-                //Handle newTypeHandle = targetSignature.TypeHandle;
-                //return IsSameType(referenceMetadata, newMetadata, referenceTypeHandle, newTypeHandle);
+                    //throw new NotImplementedException(string.Format("{0} is not yet implemented.", sourceSignature.TypeCode));
+                    Handle referenceTypeHandle = sourceSignature.TypeHandle;
+                    Handle newTypeHandle = targetSignature.TypeHandle;
+                    return IsSameHandle(referenceTypeHandle, newTypeHandle) ? null : "Type handle mismatch";
 
                 case SignatureTypeCode.Pointer:
                     throw new NotImplementedException(string.Format("{0} is not yet implemented.", sourceSignature.TypeCode));
@@ -670,7 +670,36 @@
 
         private Mapping<MethodDefinitionHandle> MapMethodDefinitionImpl(MethodDefinitionHandle handle)
         {
-            throw new NotImplementedException();
+            MetadataReader referenceMetadata = _sourceMetadata;
+            MetadataReader newMetadata = _targetMetadata;
+            MethodDefinition referenceMethodDefinition = referenceMetadata.GetMethodDefinition(handle);
+
+            string referenceName = referenceMetadata.GetString(referenceMethodDefinition.Name);
+            
+            foreach (var MethodDefinitionHandle in newMetadata.MethodDefinitions)
+            {
+                var MethodDefinition = newMetadata.GetMethodDefinition(MethodDefinitionHandle);
+
+                if (!newMetadata.StringComparer.Equals(MethodDefinition.Name, referenceName))
+                    continue;
+                
+                if (!MethodDefinition.GetDeclaringType().IsNil)
+                {
+                    if (referenceMethodDefinition.GetDeclaringType().IsNil)
+                        continue;
+
+                    Mapping<TypeDefinitionHandle> newDeclaringTypeDefinitionHandle = MapTypeDefinition(referenceMethodDefinition.GetDeclaringType());
+                    if (newDeclaringTypeDefinitionHandle.Target.IsNil)
+                        continue;
+
+                    if (newDeclaringTypeDefinitionHandle.Target != MethodDefinition.GetDeclaringType())
+                        continue;
+                }
+
+                return new Mapping<MethodDefinitionHandle>(MethodDefinitionHandle);
+            }
+
+            return new Mapping<MethodDefinitionHandle>();
         }
 
         private Mapping<MethodImplementationHandle> MapMethodImplementationImpl(MethodImplementationHandle handle)

@@ -16,7 +16,7 @@
                 Environment.ExitCode = 1;
             }
             else
-            {
+            {                
                 FileInfo referenceFile = new FileInfo(args[0]);
                 FileInfo newFile = new FileInfo(args[1]);
                 if (referenceFile.Exists && newFile.Exists)
@@ -30,6 +30,7 @@
                         }
                     }
                 }
+                Console.ReadKey();
             }
         }
     }
