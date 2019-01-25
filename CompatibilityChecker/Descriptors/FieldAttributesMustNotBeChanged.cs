@@ -11,7 +11,7 @@
         private const string Id = nameof(FieldAttributesMustNotBeChanged);
         private static readonly string _title = TitleHelper.GenerateTitle(Id);
         private static readonly string _messageFormat = "Publicly-accessible field attributes of '{0}' were changed or removed.";
-        private static readonly string _category = Categories.Type;
+        private static readonly string _category = Categories.Attribute;
         private static readonly Severity _defaultSeverity = Severity.Error;
         private static readonly string _description = null;
 

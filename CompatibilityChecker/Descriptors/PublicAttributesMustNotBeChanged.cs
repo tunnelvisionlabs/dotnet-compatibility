@@ -7,8 +7,8 @@
     {
         private const string Id = nameof(PublicAttributesMustNotBeChanged);
         private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "Attributes of publicly visible type changed.";
-        private static readonly string _category = Categories.Type;
+        private static readonly string _messageFormat = "Attributes of publicly visible type '{0}' changed.";
+        private static readonly string _category = Categories.Attribute;
         private static readonly Severity _defaultSeverity = Severity.Error;
         private static readonly string _description = null;
 
@@ -19,9 +19,9 @@
         {
         }
 
-        internal static Message CreateMessage()
+        internal static Message CreateMessage(string typeName)
         {
-            return new Message(Instance);
+            return new Message(Instance, typeName);
         }
     }
 }

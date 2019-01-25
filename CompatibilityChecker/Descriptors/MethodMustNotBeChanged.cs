@@ -10,8 +10,8 @@
     {
         private const string Id = nameof(MethodMustNotBeChanged);
         private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "Publicly-accessible method '{0}' was renamed or removed.";
-        private static readonly string _category = Categories.Type;
+        private static readonly string _messageFormat = "Publicly-accessible method '{0}' was changed or removed.";
+        private static readonly string _category = Categories.Method;
         private static readonly Severity _defaultSeverity = Severity.Error;
         private static readonly string _description = null;
 

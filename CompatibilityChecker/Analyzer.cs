@@ -65,7 +65,7 @@
                     if ((newTypeDefinition.Attributes & TypeAttributes.Sealed) == TypeAttributes.Sealed
                         && HasVisibleConstructors(newMetadata, newTypeDefinition))
                     {
-                        _logger.Report(SealedMustNotBeAddedToType.CreateMessage());
+                        _logger.Report(SealedMustNotBeAddedToType.CreateMessage(GetMetadataName(referenceMetadata, typeDefinition)));
                     }
                 }
 
@@ -80,10 +80,10 @@
 
                 TypeAttributes uncheckedAttributesMask = ~(TypeAttributes.Sealed | TypeAttributes.Abstract);
                 if ((typeDefinition.Attributes & uncheckedAttributesMask) != (newTypeDefinition.Attributes & uncheckedAttributesMask))
-                    _logger.Report(PublicAttributesMustNotBeChanged.CreateMessage());
+                    _logger.Report(PublicAttributesMustNotBeChanged.CreateMessage(GetMetadataName(referenceMetadata, typeDefinition)));
 
                 if (IsMarkedPreliminary(newMetadata, newTypeDefinition))
-                    _logger.Report(TypeMustNotBeMadePreliminaryFromStable.CreateMessage());
+                    _logger.Report(TypeMustNotBeMadePreliminaryFromStable.CreateMessage(GetMetadataName(referenceMetadata, typeDefinition)));
 
                 // check base type
                 Handle baseTypeHandle = typeDefinition.BaseType;
@@ -172,7 +172,7 @@
                         Constant constant = referenceMetadata.GetConstant(fieldDefinition.GetDefaultValue());
                         Constant newConstant = newMetadata.GetConstant(newFieldDefinition.GetDefaultValue());
                         if (constant.TypeCode != newConstant.TypeCode)
-                            _logger.Report(OtherError.CreateMessage("Constant value of a field changed.")); // throw new NotImplementedException("Constant value of a field changed.");
+                            _logger.Report(OtherError.CreateMessage("Constant value's type of a field changed.")); // throw new NotImplementedException("Constant value of a field changed.");
 
                         var referenceValue = referenceMetadata.GetBlobContent(constant.Value);
                         var newValue = referenceMetadata.GetBlobContent(constant.Value);
@@ -180,6 +180,7 @@
                             _logger.Report(OtherError.CreateMessage("Constant value of a field changed.")); // throw new NotImplementedException("Constant value of a field changed.");
                     }
                 }
+                
 
                 // check methods
                 foreach (var methodDefinition in typeDefinition.GetMethods().Select(referenceMetadata.GetMethodDefinition))
@@ -208,7 +209,10 @@
                     }
 
                     if (newMethodDefinitions.Count == 0)
+                    {
                         _logger.Report(MethodMustNotBeChanged.CreateMessage(GetMetadataName(referenceMetadata, methodDefinition))); //throw new NotImplementedException(string.Format("Publicly-visible method '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, methodDefinition)));
+                        continue;
+                    }
 
                     bool foundMethodDefinition = false;
                     foreach (var newMethodDefinition in newMethodDefinitions)
@@ -232,8 +236,39 @@
                 // If the type is an interface, additionally make sure the number of methods did not change.
                 if ((typeDefinition.Attributes & TypeAttributes.ClassSemanticsMask) == TypeAttributes.Interface)
                 {
-                    if (typeDefinition.GetMethods().Count != newTypeDefinition.GetMethods().Count)
-                        _logger.Report(OtherError.CreateMessage("Method was added to an interface.")); // throw new NotImplementedException("Method was added to an interface.");
+                    if (typeDefinition.GetMethods().Count < newTypeDefinition.GetMethods().Count)
+                    {
+                        List<MethodDefinition> addedMethods = new List<MethodDefinition>();
+                        foreach (var newMethodDefinition in newTypeDefinition.GetMethods().Select(newMetadata.GetMethodDefinition))
+                        { 
+                            string newName = newMetadata.GetString(newMethodDefinition.Name);
+
+                            List<MethodDefinition> methodDefinitions = new List<MethodDefinition>();
+                            foreach (var methodDefinition in typeDefinition.GetMethods().Select(referenceMetadata.GetMethodDefinition))
+                            {
+                                string referenceName = referenceMetadata.GetString(methodDefinition.Name);
+                                if (!string.Equals(newName, referenceName, StringComparison.Ordinal))
+                                    continue;
+
+                                // filter on number of generic parameters
+                                if (methodDefinition.GetGenericParameters().Count != newMethodDefinition.GetGenericParameters().Count)
+                                    continue;
+
+                                // filter on number of parameters
+                                if (methodDefinition.GetParameters().Count != newMethodDefinition.GetParameters().Count)
+                                    continue;
+
+                                methodDefinitions.Add(methodDefinition);
+                            }
+                            if (methodDefinitions.Count == 0)
+                            {
+                                addedMethods.Add(newMethodDefinition);
+                                continue;
+                            }
+                        }
+                        foreach(var addedMethod in addedMethods)
+                            _logger.Report(MethodMustNotBeAddedToInterface.CreateMessage(GetMetadataName(referenceMetadata, typeDefinition), GetMetadataName(newMetadata, addedMethod))); // throw new NotImplementedException("Method was added to an interface.");
+                    }
                 }
 
                 // check events
@@ -263,14 +298,14 @@
                         {
                             EventAccessors newEventAccessors = newEventDefinition.GetAccessors();
                             if (newEventAccessors.Adder.IsNil)
-                                _logger.Report(OtherError.CreateMessage("Event adder was removed.")); // throw new NotImplementedException("Event adder was removed.");
+                                _logger.Report(EventAdderMustNotBeRemoved.CreateMessage(GetMetadataName(referenceMetadata, eventDefinition, typeDefinition))); // throw new NotImplementedException("Event adder was removed.");
 
                             MethodDefinition newAdderMethodDefinition = newMetadata.GetMethodDefinition(newEventAccessors.Adder);
 
                             string referenceAdderName = referenceMetadata.GetString(referenceAdderMethodDefinition.Name);
                             string newAdderName = newMetadata.GetString(newAdderMethodDefinition.Name);
                             if (!string.Equals(referenceAdderName, newAdderName, StringComparison.Ordinal))
-                                _logger.Report(OtherError.CreateMessage("Signature of event adder changed.")); // throw new NotImplementedException("Signature of event adder changed.");
+                                _logger.Report(OtherError.CreateMessage("Name of event adder changed.")); // throw new NotImplementedException("Signature of event adder changed.");
 
                             MethodSignature referenceSignatureReader = referenceMetadata.GetSignature(referenceAdderMethodDefinition);
                             MethodSignature newSignatureReader = newMetadata.GetSignature(newAdderMethodDefinition);
@@ -286,14 +321,14 @@
                         {
                             EventAccessors newEventAccessors = newEventDefinition.GetAccessors();
                             if (newEventAccessors.Remover.IsNil)
-                                _logger.Report(OtherError.CreateMessage("Event remover was removed.")); // throw new NotImplementedException("Event remover was removed.");
+                                _logger.Report(EventRemoverMustNotBeRemoved.CreateMessage(GetMetadataName(referenceMetadata, eventDefinition, typeDefinition))); // throw new NotImplementedException("Event remover was removed.");
 
                             MethodDefinition newRemoverMethodDefinition = newMetadata.GetMethodDefinition(newEventAccessors.Remover);
 
                             string referenceRemoverName = referenceMetadata.GetString(referenceRemoverMethodDefinition.Name);
                             string newRemoverName = newMetadata.GetString(newRemoverMethodDefinition.Name);
                             if (!string.Equals(referenceRemoverName, newRemoverName, StringComparison.Ordinal))
-                                _logger.Report(OtherError.CreateMessage("Signature of event remover changed.")); // throw new NotImplementedException("Signature of event remover changed.");
+                                _logger.Report(OtherError.CreateMessage("Name of event remover changed.")); // throw new NotImplementedException("Signature of event remover changed.");
 
                             MethodSignature referenceSignatureReader = referenceMetadata.GetSignature(referenceRemoverMethodDefinition);
                             MethodSignature newSignatureReader = newMetadata.GetSignature(newRemoverMethodDefinition);
@@ -309,14 +344,14 @@
                         {
                             EventAccessors newEventAccessors = newEventDefinition.GetAccessors();
                             if (newEventAccessors.Raiser.IsNil)
-                                _logger.Report(OtherError.CreateMessage("Event raiser was removed.")); // throw new NotImplementedException("Event raiser was removed.");
+                                _logger.Report(EventRaiserMustNotBeRemoved.CreateMessage(GetMetadataName(referenceMetadata, eventDefinition, typeDefinition))); // throw new NotImplementedException("Event raiser was removed.");
 
                             MethodDefinition newRaiserMethodDefinition = newMetadata.GetMethodDefinition(newEventAccessors.Raiser);
 
                             string referenceRaiserName = referenceMetadata.GetString(referenceRaiserMethodDefinition.Name);
                             string newRaiserName = newMetadata.GetString(newRaiserMethodDefinition.Name);
                             if (!string.Equals(referenceRaiserName, newRaiserName, StringComparison.Ordinal))
-                                _logger.Report(OtherError.CreateMessage("Signature of event raiser changed.")); // throw new NotImplementedException("Signature of event raiser changed.");
+                                _logger.Report(OtherError.CreateMessage("Name of event raiser changed.")); // throw new NotImplementedException("Signature of event raiser changed.");
 
                             MethodSignature referenceSignatureReader = referenceMetadata.GetSignature(referenceRaiserMethodDefinition);
                             MethodSignature newSignatureReader = newMetadata.GetSignature(newRaiserMethodDefinition);
@@ -346,11 +381,11 @@
                     }
 
                     if (newPropertyDefinitionHandle.IsNil)
-                        _logger.Report(OtherError.CreateMessage(string.Format("Publicly-visible property '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, propertyDefinition, typeDefinition)))); //throw new NotImplementedException(string.Format("Publicly-visible property '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, propertyDefinition, typeDefinition)));
+                        _logger.Report(PropertyMustNotBeChanged.CreateMessage(GetMetadataName(referenceMetadata, propertyDefinition, typeDefinition))); //throw new NotImplementedException(string.Format("Publicly-visible property '{0}' was renamed or removed.", GetMetadataName(referenceMetadata, propertyDefinition, typeDefinition)));
 
                     PropertyDefinition newPropertyDefinition = newMetadata.GetPropertyDefinition(newPropertyDefinitionHandle);
                     if (propertyDefinition.Attributes != newPropertyDefinition.Attributes)
-                        _logger.Report(OtherError.CreateMessage("Attributes of publicly-visible property changed.")); // throw new NotImplementedException("Attributes of publicly-visible property changed.");
+                        _logger.Report(PropertyAttributesMustNotBeChanged.CreateMessage(GetMetadataName(referenceMetadata, propertyDefinition, typeDefinition))); // throw new NotImplementedException("Attributes of publicly-visible property changed.");
 
                     PropertySignature referenceSignature = referenceMetadata.GetSignature(propertyDefinition);
                     PropertySignature newSignature = newMetadata.GetSignature(newPropertyDefinition);
@@ -372,7 +407,7 @@
                             string referenceGetterName = referenceMetadata.GetString(referenceGetterMethodDefinition.Name);
                             string newGetterName = newMetadata.GetString(newGetterMethodDefinition.Name);
                             if (!string.Equals(referenceGetterName, newGetterName, StringComparison.Ordinal))
-                                _logger.Report(OtherError.CreateMessage("Signature of property getter changed.")); // throw new NotImplementedException("Signature of property getter changed.");
+                                _logger.Report(OtherError.CreateMessage("Name of property getter changed.")); // throw new NotImplementedException("Signature of property getter changed.");
 
                             MethodSignature referenceAccessorSignatureReader = referenceMetadata.GetSignature(referenceGetterMethodDefinition);
                             MethodSignature newAccessorSignatureReader = newMetadata.GetSignature(newGetterMethodDefinition);
@@ -395,7 +430,7 @@
                             string referenceSetterName = referenceMetadata.GetString(referenceSetterMethodDefinition.Name);
                             string newSetterName = newMetadata.GetString(newSetterMethodDefinition.Name);
                             if (!string.Equals(referenceSetterName, newSetterName, StringComparison.Ordinal))
-                                _logger.Report(OtherError.CreateMessage("Signature of property setter changed.")); // throw new NotImplementedException("Signature of property setter changed.");
+                                _logger.Report(OtherError.CreateMessage("Name of property setter changed.")); // throw new NotImplementedException("Signature of property setter changed.");
 
                             MethodSignature referenceAccessorSignatureReader = referenceMetadata.GetSignature(referenceSetterMethodDefinition);
                             MethodSignature newAccessorSignatureReader = newMetadata.GetSignature(newSetterMethodDefinition);
@@ -428,7 +463,7 @@
                 var referencePublicKey = referenceMetadata.GetBlobContent(referenceAssemblyDefinition.PublicKey);
                 var newPublicKey = newMetadata.GetBlobContent(newAssemblyDefinition.PublicKey);
                 if (!referencePublicKey.SequenceEqual(newPublicKey))
-                    _logger.Report(PublicKeyMustNotBeChanged.CreateMessage());
+                    _logger.Report(PublicKeyMustNotBeChanged.CreateMessage(referenceName));
             }
         }
 

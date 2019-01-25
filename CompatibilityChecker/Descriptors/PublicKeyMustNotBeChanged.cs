@@ -15,7 +15,7 @@
     {
         private const string Id = nameof(PublicKeyMustNotBeChanged);
         private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "The public key of a strong-named assembly cannot change.";
+        private static readonly string _messageFormat = "The public key of a strong-named assembly '{0}' cannot change.";
         private static readonly string _category = Categories.Assembly;
         private static readonly Severity _defaultSeverity = Severity.Error;
         private static readonly string _description = null;
@@ -27,9 +27,9 @@
         {
         }
 
-        internal static Message CreateMessage()
+        internal static Message CreateMessage(string assemblyName)
         {
-            return new Message(Instance);
+            return new Message(Instance, assemblyName);
         }
     }
 }

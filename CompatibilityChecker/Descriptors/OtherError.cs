@@ -11,7 +11,7 @@
         private static readonly string _title = TitleHelper.GenerateTitle(Id);
 
         private static readonly string _messageFormat = "Unknown error occured. {0}";
-        private static readonly string _category = Categories.Type;
+        private static readonly string _category = Categories.Other;
         private static readonly Severity _defaultSeverity = Severity.Error;
         private static readonly string _description = null;
 

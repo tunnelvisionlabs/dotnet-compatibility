@@ -4,20 +4,20 @@
     using System.Runtime.CompilerServices;
 
     /// <summary>
-    /// Publicly-accessible events cannot be removed.
+    /// Publicly-accessible events cannot have their raiser removed.
     /// </summary>
-    internal class EventMustNotBeRemoved : CompatibilityDescriptor
+    internal class EventRaiserMustNotBeRemoved : CompatibilityDescriptor
     {
-        private const string Id = nameof(EventMustNotBeRemoved);
+        private const string Id = nameof(EventRaiserMustNotBeRemoved);
         private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "Publicly-accessible event '{0}' cannot be removed.";
+        private static readonly string _messageFormat = "Publicly-accessible event '{0}' cannot have its raiser removed.";
         private static readonly string _category = Categories.Event;
         private static readonly Severity _defaultSeverity = Severity.Error;
         private static readonly string _description = null;
 
-        private static readonly EventMustNotBeRemoved Instance = new EventMustNotBeRemoved();
+        private static readonly EventRaiserMustNotBeRemoved Instance = new EventRaiserMustNotBeRemoved();
 
-        private EventMustNotBeRemoved()
+        private EventRaiserMustNotBeRemoved()
             : base(Id, _title, _messageFormat, _category, _defaultSeverity, _description)
         {
         }
