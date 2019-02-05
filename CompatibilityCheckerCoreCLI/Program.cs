@@ -31,7 +31,6 @@ namespace CompatibilityCheckerCoreCLI
                         }
                     }
                 }
-                Console.ReadKey();
             }
         }
     }
