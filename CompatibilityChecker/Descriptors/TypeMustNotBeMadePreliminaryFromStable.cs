@@ -21,7 +21,7 @@
 
         internal static Message CreateMessage(string typeName)
         {
-            return new Message(Instance);
+            return new Message(Instance, typeName);
         }
     }
 }

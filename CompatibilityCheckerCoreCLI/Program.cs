@@ -1,8 +1,9 @@
-﻿namespace CompatibilityCheckExample
+﻿using System;
+using System.Reflection.PortableExecutable;
+using CompatibilityChecker;
+
+namespace CompatibilityCheckerCoreCLI
 {
-    using System;
-    using System.Reflection.PortableExecutable;
-    using CompatibilityChecker;
     using File = System.IO.File;
     using FileInfo = System.IO.FileInfo;
     

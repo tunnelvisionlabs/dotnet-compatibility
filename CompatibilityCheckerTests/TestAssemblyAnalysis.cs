@@ -37,7 +37,7 @@
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
             Assert.AreEqual(1, messages.Count);
-            Assert.AreEqual("Error AssemblyNameMustNotBeChanged: The simple name of an assembly cannot change.", messages[0].ToString());
+            Assert.AreEqual("Error AssemblyNameMustNotBeChanged: The simple name of an assembly cannot change for 'Test.Assembly'.", messages[0].ToString());
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
             Assert.AreEqual(1, messages.Count);
-            Assert.AreEqual("Error PublicKeyMustNotBeChanged: The public key of a strong-named assembly cannot change.", messages[0].ToString());
+            Assert.AreEqual("Error PublicKeyMustNotBeChanged: The public key of a strong-named assembly 'Test.Assembly' cannot change.", messages[0].ToString());
         }
     }
 }

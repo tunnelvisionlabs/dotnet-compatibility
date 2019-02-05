@@ -95,7 +95,7 @@
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
             Assert.AreEqual(1, messages.Count);
-            Assert.AreEqual("Error AbstractMustNotBeAddedToType: The 'abstract' modifier cannot be added to a type.", messages[0].ToString());
+            Assert.AreEqual("Error AbstractMustNotBeAddedToType: The 'abstract' modifier cannot be added to type '.MyType'.", messages[0].ToString());
         }
 
         [TestMethod]
@@ -184,7 +184,7 @@
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
             Assert.AreEqual(1, messages.Count);
-            Assert.AreEqual("Error SealedMustNotBeAddedToType: The 'sealed' modifier cannot be added to a type.", messages[0].ToString());
+            Assert.AreEqual("Error SealedMustNotBeAddedToType: The 'sealed' modifier cannot be added to type '.MyType'.", messages[0].ToString());
         }
     }
 }

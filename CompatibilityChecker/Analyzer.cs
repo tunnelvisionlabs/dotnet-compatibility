@@ -74,7 +74,7 @@
                     if ((newTypeDefinition.Attributes & TypeAttributes.Abstract) == TypeAttributes.Abstract
                         && HasVisibleConstructors(newMetadata, newTypeDefinition))
                     {
-                        _logger.Report(AbstractMustNotBeAddedToType.CreateMessage());
+                        _logger.Report(AbstractMustNotBeAddedToType.CreateMessage(GetMetadataName(referenceMetadata, typeDefinition)));
                     }
                 }
 
@@ -450,7 +450,7 @@
             string referenceName = referenceMetadata.GetString(referenceAssemblyDefinition.Name);
             string newName = newMetadata.GetString(newAssemblyDefinition.Name);
             if (!string.Equals(referenceName, newName, StringComparison.Ordinal))
-                _logger.Report(AssemblyNameMustNotBeChanged.CreateMessage());
+                _logger.Report(AssemblyNameMustNotBeChanged.CreateMessage(referenceName));
 
             string referenceCulture = referenceMetadata.GetString(referenceAssemblyDefinition.Culture);
             string newCulture = referenceMetadata.GetString(newAssemblyDefinition.Culture);

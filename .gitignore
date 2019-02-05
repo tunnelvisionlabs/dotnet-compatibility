@@ -9,3 +9,5 @@ TestResults/
 *.user
 *.suo
 .vs/
+MigrationBackup/
+*.dll

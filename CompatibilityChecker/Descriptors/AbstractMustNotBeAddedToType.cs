@@ -8,7 +8,7 @@
     {
         private const string Id = nameof(AbstractMustNotBeAddedToType);
         private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "The 'abstract' modifier cannot be added to a type.";
+        private static readonly string _messageFormat = "The 'abstract' modifier cannot be added to type '{0}'.";
         private static readonly string _category = Categories.Type;
         private static readonly Severity _defaultSeverity = Severity.Error;
         private static readonly string _description = null;
@@ -20,9 +20,9 @@
         {
         }
 
-        internal static Message CreateMessage()
+        internal static Message CreateMessage(string typeName)
         {
-            return new Message(Instance);
+            return new Message(Instance, typeName);
         }
     }
 }

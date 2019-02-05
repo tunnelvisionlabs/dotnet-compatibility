@@ -13,7 +13,7 @@
     {
         private const string Id = nameof(AssemblyNameMustNotBeChanged);
         private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "The simple name of an assembly cannot change.";
+        private static readonly string _messageFormat = "The simple name of an assembly cannot change for '{0}'.";
         private static readonly string _category = Categories.Assembly;
         private static readonly Severity _defaultSeverity = Severity.Error;
         private static readonly string _description = null;
@@ -25,9 +25,9 @@
         {
         }
 
-        internal static Message CreateMessage()
+        internal static Message CreateMessage(string assemblyName)
         {
-            return new Message(Instance);
+            return new Message(Instance, assemblyName);
         }
     }
 }

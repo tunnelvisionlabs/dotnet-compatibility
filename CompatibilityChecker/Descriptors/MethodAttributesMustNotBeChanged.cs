@@ -22,9 +22,9 @@
         {
         }
 
-        internal static Message CreateMessage(string nethodName)
+        internal static Message CreateMessage(string methodName)
         {
-            return new Message(Instance, nethodName);
+            return new Message(Instance, methodName);
         }
     }
 }
