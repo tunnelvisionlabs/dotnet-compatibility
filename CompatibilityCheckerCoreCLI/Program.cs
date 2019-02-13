@@ -6,7 +6,7 @@ namespace CompatibilityCheckerCoreCLI
 {
     using File = System.IO.File;
     using FileInfo = System.IO.FileInfo;
-    
+
     internal class Program
     {
         private static void Main(string[] args)
@@ -17,7 +17,8 @@ namespace CompatibilityCheckerCoreCLI
                 Environment.ExitCode = 1;
             }
             else
-            {                
+            {
+
                 FileInfo referenceFile = new FileInfo(args[0]);
                 FileInfo newFile = new FileInfo(args[1]);
                 if (referenceFile.Exists && newFile.Exists)
@@ -26,8 +27,20 @@ namespace CompatibilityCheckerCoreCLI
                     {
                         using (PEReader newAssembly = new PEReader(File.OpenRead(newFile.FullName)))
                         {
-                            Analyzer analyzer = new Analyzer(referenceAssembly, newAssembly, null);
-                            analyzer.Run();                            
+                            Analyzer analyzer = new Analyzer(referenceAssembly, newAssembly, null, null);
+                            analyzer.Run();
+                            if (analyzer.HasRun)
+                            {
+                                Console.Error.WriteLine(string.Format("Analyzer done. {0} errors, {1} warnings, {2} informational items.", analyzer.ResultStatistics.SeverityCounts.error, analyzer.ResultStatistics.SeverityCounts.warning, analyzer.ResultStatistics.SeverityCounts.information));
+                                if (analyzer.ResultStatistics.SeverityCounts.error > 0)
+                                {
+                                    Environment.ExitCode = -2;
+                                }
+                            }
+                            else
+                            {
+                                Environment.ExitCode = -1;
+                            }
                         }
                     }
                 }
