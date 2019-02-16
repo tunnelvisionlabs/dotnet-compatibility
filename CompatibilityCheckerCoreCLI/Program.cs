@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Reflection.PortableExecutable;
 using CompatibilityChecker;
 
@@ -23,6 +24,10 @@ namespace CompatibilityCheckerCoreCLI
                 FileInfo newFile = new FileInfo(args[1]);
                 if (referenceFile.Exists && newFile.Exists)
                 {
+                    var refName = AssemblyName.GetAssemblyName(referenceFile.FullName);
+                    var newName = AssemblyName.GetAssemblyName(newFile.FullName);
+                    Console.WriteLine("Using '{0}' as the reference assembly.", refName.FullName);
+                    Console.WriteLine("Using '{0}' as the new assembly.", refName.FullName);
                     using (PEReader referenceAssembly = new PEReader(File.OpenRead(referenceFile.FullName)))
                     {
                         using (PEReader newAssembly = new PEReader(File.OpenRead(newFile.FullName)))
@@ -43,8 +48,20 @@ namespace CompatibilityCheckerCoreCLI
                             }
                         }
                     }
+
+                }
+                else
+                {
+                    if (!referenceFile.Exists)
+                        Console.Error.WriteLine("Reference file '{0}' not found or inaccessible.", referenceFile.FullName);
+                    if (!newFile.Exists)
+                        Console.Error.WriteLine("New file '{0}' not found or inaccessible.", newFile.FullName);
                 }
             }
+#if DEBUG
+            Console.WriteLine("Done. Press any key to exit.");
+            Console.ReadKey();
+#endif
         }
     }
 }

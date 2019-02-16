@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Reflection;
 using System.Reflection.PortableExecutable;
 using CompatibilityChecker;
 
-namespace CompatibilityCheckerCLI
+namespace CompatibilityCheckerCoreCLI
 {
     using File = System.IO.File;
     using FileInfo = System.IO.FileInfo;
@@ -18,11 +19,15 @@ namespace CompatibilityCheckerCLI
             }
             else
             {
-                
+
                 FileInfo referenceFile = new FileInfo(args[0]);
                 FileInfo newFile = new FileInfo(args[1]);
                 if (referenceFile.Exists && newFile.Exists)
                 {
+                    var refName = AssemblyName.GetAssemblyName(referenceFile.FullName);
+                    var newName = AssemblyName.GetAssemblyName(newFile.FullName);
+                    Console.WriteLine("Using '{0}' as the reference assembly.", refName.FullName);
+                    Console.WriteLine("Using '{0}' as the new assembly.", refName.FullName);
                     using (PEReader referenceAssembly = new PEReader(File.OpenRead(referenceFile.FullName)))
                     {
                         using (PEReader newAssembly = new PEReader(File.OpenRead(newFile.FullName)))
@@ -31,19 +36,32 @@ namespace CompatibilityCheckerCLI
                             analyzer.Run();
                             if (analyzer.HasRun)
                             {
-                                Console.Error.WriteLine(string.Format("Analyzer done. {0} errors, {1} warnings, {2} informational items.",analyzer.ResultStatistics.SeverityCounts.error, analyzer.ResultStatistics.SeverityCounts.warning, analyzer.ResultStatistics.SeverityCounts.information));
-                                if(analyzer.ResultStatistics.SeverityCounts.error > 0)
+                                Console.Error.WriteLine(string.Format("Analyzer done. {0} errors, {1} warnings, {2} informational items.", analyzer.ResultStatistics.SeverityCounts.error, analyzer.ResultStatistics.SeverityCounts.warning, analyzer.ResultStatistics.SeverityCounts.information));
+                                if (analyzer.ResultStatistics.SeverityCounts.error > 0)
                                 {
                                     Environment.ExitCode = -2;
                                 }
-                            } else
+                            }
+                            else
                             {
                                 Environment.ExitCode = -1;
                             }
                         }
                     }
+
+                }
+                else
+                {
+                    if (!referenceFile.Exists)
+                        Console.Error.WriteLine("Reference file '{0}' not found or inaccessible.", referenceFile.FullName);
+                    if (!newFile.Exists)
+                        Console.Error.WriteLine("New file '{0}' not found or inaccessible.", newFile.FullName);
                 }
             }
+#if DEBUG
+            Console.WriteLine("Done. Press any key to exit.");
+            Console.ReadKey();
+#endif
         }
     }
 }
