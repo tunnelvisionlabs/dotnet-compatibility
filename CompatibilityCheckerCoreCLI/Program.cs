@@ -56,6 +56,7 @@ namespace CompatibilityCheckerCoreCLI
                         Console.Error.WriteLine("Reference file '{0}' not found or inaccessible.", referenceFile.FullName);
                     if (!newFile.Exists)
                         Console.Error.WriteLine("New file '{0}' not found or inaccessible.", newFile.FullName);
+                    Environment.ExitCode = 2;
                 }
             }
 #if DEBUG
