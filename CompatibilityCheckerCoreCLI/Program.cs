@@ -50,42 +50,46 @@ namespace CompatibilityCheckerCoreCLI
 
         private static void RunWithOptions(Options opts)
         {
-            Guid timeline_guid = Guid.NewGuid();
+            //Guid timeline_guid = Guid.NewGuid();
             FileInfo referenceFile = new FileInfo(opts.ReferenceAssembly);
             FileInfo newFile = new FileInfo(opts.NewAssembly);
             if (referenceFile.Exists && newFile.Exists)
             {
-                if (opts.AzurePipelines)
-                    Console.WriteLine("##vso[task.logdetail id={0};name=BinaryCompatibilityCheck;type=build;order=1;state=Initialized]Starting...", timeline_guid);
+                //if (opts.AzurePipelines)
+                    //Console.WriteLine("##vso[task.logdetail id={0};name=BinaryCompatibilityCheck;type=build;order=1;state=Initialized]Starting...", timeline_guid);
                 var refName = AssemblyName.GetAssemblyName(referenceFile.FullName);
                 var newName = AssemblyName.GetAssemblyName(newFile.FullName);
-                Console.WriteLine("{1}Using '{0}' as the reference assembly.", refName.FullName, opts.AzurePipelines ? string.Format("##vso[task.logdetail id={0};state=InProgress]", timeline_guid) : string.Empty);
-                Console.WriteLine("{1}Using '{0}' as the new assembly.", refName.FullName, opts.AzurePipelines ? string.Format("##vso[task.logdetail id={0};state=InProgress]", timeline_guid) : string.Empty);
+                Console.WriteLine("Using '{0}' as the reference assembly.", refName.FullName);
+                Console.WriteLine("Using '{0}' as the new assembly.", refName.FullName);
                 using (PEReader referenceAssembly = new PEReader(File.OpenRead(referenceFile.FullName)))
                 {
                     using (PEReader newAssembly = new PEReader(File.OpenRead(newFile.FullName)))
                     {
-                        IMessageLogger logger = opts.AzurePipelines ? (IMessageLogger)new AzurePipelinesMessageLogger(timeline_guid) : new ConsoleMessageLogger();
+                        IMessageLogger logger = opts.AzurePipelines ? (IMessageLogger)new AzurePipelinesMessageLogger() : new ConsoleMessageLogger();
                         Analyzer analyzer = new Analyzer(referenceAssembly, newAssembly, null, logger);
                         analyzer.Run();
                         if (analyzer.HasRun)
                         {
+                            Console.WriteLine(string.Format("Analyzer done. {0} errors, {1} warnings, {2} informational items.", analyzer.ResultStatistics.SeverityCounts.error, analyzer.ResultStatistics.SeverityCounts.warning, analyzer.ResultStatistics.SeverityCounts.information));
+
                             if (analyzer.ResultStatistics.SeverityCounts.error > 0)
                             {
-                                Console.WriteLine(string.Format("{3}Analyzer done. {0} errors, {1} warnings, {2} informational items.", analyzer.ResultStatistics.SeverityCounts.error, analyzer.ResultStatistics.SeverityCounts.warning, analyzer.ResultStatistics.SeverityCounts.information, opts.AzurePipelines ? "##vso[task.complete result=SucceededWithIssues]" : string.Empty));
+                                if(opts.AzurePipelines)
+                                    Console.WriteLine("##vso[task.complete result=SucceededWithIssues]");
                                 Environment.ExitCode = -2;
                                 return;
                             }
                             else
                             {
-                                Console.WriteLine(string.Format("{3}Analyzer done. {0} errors, {1} warnings, {2} informational items.", analyzer.ResultStatistics.SeverityCounts.error, analyzer.ResultStatistics.SeverityCounts.warning, analyzer.ResultStatistics.SeverityCounts.information, opts.AzurePipelines ? "##vso[task.complete result=Succeeded]" : string.Empty));
+                                if (opts.AzurePipelines)
+                                    Console.WriteLine("##vso[task.complete result=Succeeded]");
                                 return;
                             }
                         }
                         else
                         {
-                            Console.WriteLine(string.Format("{0}Analyzer failed to run.", opts.AzurePipelines ? "##vso[task.complete result=Failed]" : string.Empty));
-
+                            if (opts.AzurePipelines)
+                                Console.WriteLine("##vso[task.complete result=Failed]");
                             Environment.ExitCode = -1;
                             return;
                         }
