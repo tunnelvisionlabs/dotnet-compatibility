@@ -22,7 +22,7 @@ namespace CompatibilityCheckerCoreCLI
             public string NewAssembly { get; set; }
 
             [Option('a', "azure-pipelines", Required = false, Default = false, HelpText = "Include the logging prefixes for Azure Pipelines.")]
-            public bool AzurePipelines { get; set; }            
+            public bool AzurePipelines { get; set; }
 
             [Usage()]
             public static IEnumerable<Example> Examples {
@@ -55,12 +55,12 @@ namespace CompatibilityCheckerCoreCLI
             FileInfo newFile = new FileInfo(opts.NewAssembly);
             if (referenceFile.Exists && newFile.Exists)
             {
-                if(opts.AzurePipelines)
-                    Console.WriteLine("##vso[task.logdetail id={0};name=project1;type=build;order=1;state=Initialized]Starting...", timeline_guid);
+                if (opts.AzurePipelines)
+                    Console.WriteLine("##vso[task.logdetail id={0};name=BinaryCompatibilityCheck;type=build;order=1;state=Initialized]Starting...", timeline_guid);
                 var refName = AssemblyName.GetAssemblyName(referenceFile.FullName);
                 var newName = AssemblyName.GetAssemblyName(newFile.FullName);
-                Console.WriteLine("{1}Using '{0}' as the reference assembly.", refName.FullName, opts.AzurePipelines ? "##vso[task.logdetail state=InProgress]" : string.Empty);
-                Console.WriteLine("{1}Using '{0}' as the new assembly.", refName.FullName, opts.AzurePipelines ? "##vso[task.logdetail state=InProgress]" : string.Empty);
+                Console.WriteLine("{1}Using '{0}' as the reference assembly.", refName.FullName, opts.AzurePipelines ? string.Format("##vso[task.logdetail id={0};state=InProgress]", timeline_guid) : string.Empty);
+                Console.WriteLine("{1}Using '{0}' as the new assembly.", refName.FullName, opts.AzurePipelines ? string.Format("##vso[task.logdetail id={0};state=InProgress]", timeline_guid) : string.Empty);
                 using (PEReader referenceAssembly = new PEReader(File.OpenRead(referenceFile.FullName)))
                 {
                     using (PEReader newAssembly = new PEReader(File.OpenRead(newFile.FullName)))
@@ -75,7 +75,8 @@ namespace CompatibilityCheckerCoreCLI
                                 Console.WriteLine(string.Format("{3}Analyzer done. {0} errors, {1} warnings, {2} informational items.", analyzer.ResultStatistics.SeverityCounts.error, analyzer.ResultStatistics.SeverityCounts.warning, analyzer.ResultStatistics.SeverityCounts.information, opts.AzurePipelines ? "##vso[task.complete result=SucceededWithIssues]" : string.Empty));
                                 Environment.ExitCode = -2;
                                 return;
-                            } else
+                            }
+                            else
                             {
                                 Console.WriteLine(string.Format("{3}Analyzer done. {0} errors, {1} warnings, {2} informational items.", analyzer.ResultStatistics.SeverityCounts.error, analyzer.ResultStatistics.SeverityCounts.warning, analyzer.ResultStatistics.SeverityCounts.information, opts.AzurePipelines ? "##vso[task.complete result=Succeeded]" : string.Empty));
                                 return;

@@ -56,11 +56,11 @@ namespace CompatibilityCheckerCoreCLI
             if (referenceFile.Exists && newFile.Exists)
             {
                 if (opts.AzurePipelines)
-                    Console.WriteLine("##vso[task.logdetail id={0};name=project1;type=build;order=1;state=Initialized]Starting...", timeline_guid);
+                    Console.WriteLine("##vso[task.logdetail id={0};name=BinaryCompatibilityCheck;type=build;order=1;state=Initialized]Starting...", timeline_guid);
                 var refName = AssemblyName.GetAssemblyName(referenceFile.FullName);
                 var newName = AssemblyName.GetAssemblyName(newFile.FullName);
-                Console.WriteLine("{1}Using '{0}' as the reference assembly.", refName.FullName, opts.AzurePipelines ? "##vso[task.logdetail state=InProgress]" : string.Empty);
-                Console.WriteLine("{1}Using '{0}' as the new assembly.", refName.FullName, opts.AzurePipelines ? "##vso[task.logdetail state=InProgress]" : string.Empty);
+                Console.WriteLine("{1}Using '{0}' as the reference assembly.", refName.FullName, opts.AzurePipelines ? string.Format("##vso[task.logdetail id={0};state=InProgress]", timeline_guid) : string.Empty);
+                Console.WriteLine("{1}Using '{0}' as the new assembly.", refName.FullName, opts.AzurePipelines ? string.Format("##vso[task.logdetail id={0};state=InProgress]", timeline_guid) : string.Empty);
                 using (PEReader referenceAssembly = new PEReader(File.OpenRead(referenceFile.FullName)))
                 {
                     using (PEReader newAssembly = new PEReader(File.OpenRead(newFile.FullName)))
