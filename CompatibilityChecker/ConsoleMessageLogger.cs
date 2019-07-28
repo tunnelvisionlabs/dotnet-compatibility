@@ -2,7 +2,7 @@
 {
     using System;
 
-    internal class ConsoleMessageLogger : IMessageLogger
+    public class ConsoleMessageLogger : IMessageLogger
     {
         public virtual void Report(Message message)
         {
