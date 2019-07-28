@@ -24,7 +24,7 @@ namespace CompatibilityCheckerCoreCLI
             [Option('a', "azure-pipelines", Required = false, Default = false, HelpText = "Include the logging prefixes for Azure Pipelines.")]
             public bool AzurePipelines { get; set; }            
 
-            [Usage(ApplicationAlias = "cccc")]
+            [Usage()]
             public static IEnumerable<Example> Examples {
                 get {
                     yield return new Example("Compare versions", new Options { ReferenceAssembly = "Assembly-1.0.0.dll", NewAssembly = "Assembly-1.0.1.dll" });
@@ -49,20 +49,23 @@ namespace CompatibilityCheckerCoreCLI
         }
 
         private static void RunWithOptions(Options opts)
-        {            
+        {
+            Guid timeline_guid = Guid.NewGuid();
             FileInfo referenceFile = new FileInfo(opts.ReferenceAssembly);
             FileInfo newFile = new FileInfo(opts.NewAssembly);
             if (referenceFile.Exists && newFile.Exists)
             {
+                if(opts.AzurePipelines)
+                    Console.WriteLine("##vso[task.logdetail id={0};name=project1;type=build;order=1;state=Initialized]Starting...", timeline_guid);
                 var refName = AssemblyName.GetAssemblyName(referenceFile.FullName);
                 var newName = AssemblyName.GetAssemblyName(newFile.FullName);
-                Console.WriteLine("{1}Using '{0}' as the reference assembly.", refName.FullName, opts.AzurePipelines ? "##vso[task.logdetail]" : string.Empty);
-                Console.WriteLine("{1}Using '{0}' as the new assembly.", refName.FullName, opts.AzurePipelines ? "##vso[task.logdetail]" : string.Empty);
+                Console.WriteLine("{1}Using '{0}' as the reference assembly.", refName.FullName, opts.AzurePipelines ? "##vso[task.logdetail state=InProgress]" : string.Empty);
+                Console.WriteLine("{1}Using '{0}' as the new assembly.", refName.FullName, opts.AzurePipelines ? "##vso[task.logdetail state=InProgress]" : string.Empty);
                 using (PEReader referenceAssembly = new PEReader(File.OpenRead(referenceFile.FullName)))
                 {
                     using (PEReader newAssembly = new PEReader(File.OpenRead(newFile.FullName)))
                     {
-                        IMessageLogger logger = opts.AzurePipelines ? (IMessageLogger)new AzurePipelinesMessageLogger() : new ConsoleMessageLogger();
+                        IMessageLogger logger = opts.AzurePipelines ? (IMessageLogger)new AzurePipelinesMessageLogger(timeline_guid) : new ConsoleMessageLogger();
                         Analyzer analyzer = new Analyzer(referenceAssembly, newAssembly, null, logger);
                         analyzer.Run();
                         if (analyzer.HasRun)
