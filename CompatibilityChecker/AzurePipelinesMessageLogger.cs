@@ -21,7 +21,7 @@
                     Console.Error.WriteLine("##vso[task.logissue type=warning]{0}", message);
                     break;
                 default:
-                    Console.WriteLine("##vso[task.logdetail id={1}]{0}",message,timeline_guid);
+                    Console.WriteLine("##vso[task.logdetail id={1}]{0}",message, TimelineGuid);
                     break;
             }
                 
