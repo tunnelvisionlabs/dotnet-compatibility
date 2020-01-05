@@ -1,10 +1,10 @@
 ﻿namespace CompatibilityChecker
 {
-    internal enum Severity
+    public enum Severity
     {
-        Disabled,
-        Information,
-        Warning,
-        Error,
+        Disabled = 0,
+        Information = 1,
+        Warning = 2,
+        Error = 3,
     }
 }
