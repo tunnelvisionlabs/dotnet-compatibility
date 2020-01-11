@@ -32,6 +32,7 @@ namespace CompatibilityCheckerCoreCLI
                 get {
                     yield return new Example("Compare versions", new Options { ReferenceAssembly = "Assembly-1.0.0.dll", NewAssembly = "Assembly-1.0.1.dll" });
                     yield return new Example("Compare versions in Azure Pipelines as CI", new Options { ReferenceAssembly = "Assembly-1.0.0.dll", NewAssembly = "Assembly-1.0.1.dll", AzurePipelines = true });
+                    yield return new Example("Compare versions in Azure Pipelines as CI without failing the CI job", new Options { ReferenceAssembly = "Assembly-1.0.0.dll", NewAssembly = "Assembly-1.0.1.dll", AzurePipelines = true, WarningsOnly = true });
                 }
             }
 
