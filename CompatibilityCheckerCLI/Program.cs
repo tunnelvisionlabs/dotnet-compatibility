@@ -39,6 +39,7 @@ namespace CompatibilityCheckerCoreCLI
 
         private static void Main(string[] args)
         {
+            Console.WriteLine("Running CompatibilityCheckerCLI v{0}...", Assembly.GetExecutingAssembly().GetName().Version);
             var result = CommandLine.Parser.Default.ParseArguments<Options>(args)
                .WithParsed(opts => RunWithOptions(opts));
 #if DEBUG
