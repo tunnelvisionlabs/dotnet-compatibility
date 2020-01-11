@@ -2,7 +2,7 @@
   "profiles": {
     "CompatibilityCheckerCoreExample": {
       "commandName": "Project",
-      "commandLineArgs": "\"..\\..\\..\\..\\MediaBrowser.Common_nuget.dll\" \"..\\..\\..\\..\\MediaBrowser.Common_artifact.dll\"  --azure-pipelines --warnings-only"
+      "commandLineArgs": "\"..\\..\\..\\..\\Emby.Naming_10.4.3.dll\" \"..\\..\\..\\..\\Emby.Naming_error.dll\"  --azure-pipelines --warnings-only"
     }
   }
 }

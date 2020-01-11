@@ -11,3 +11,4 @@ TestResults/
 .vs/
 MigrationBackup/
 *.dll
+*.zip
