@@ -1,21 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net48;netstandard2.1</TargetFrameworks>
-    <Version>0.1.0</Version>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Version>0.2.0</Version>
+    <PackageId>CompatibilityChecker</PackageId>
+    <Description>This project implements a binary compatibility checker for .NET assemblies. The goal of this project is to automate the process of identifying binary- and source-breaking changes between releases of a .NET library. Libraries with string compatibility policies will eventually be able to incorporate this check in the unit tests for the library. The checker will download a declared previous release of the library from NuGet (or potentially from another source), and verify that the latest build of the library is compatible with the binary interfaces defined by the earlier release.
+
+This library may also feature support for higher levels of compatibility, such as warning users if new overloads of a method could result in an AmbiguousMatchException for users who didn't specify a complete signature when using reflection.
+
+Diagnostics produced by this checker will be categorized by their likely impact on consumers, and by whether the change constitutes a binary- or source-level breaking change. At this time, there are no plans to implement detection or reporting for changes in runtime semantics.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <IsTool>true</IsTool>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>compat-checker</ToolCommandName>
+    <RepositoryUrl>https://github.com/EraYaN/dotnet-compatibility</RepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Collections.Immutable" Version="1.7.0" />
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
     <PackageReference Include="System.Reflection.Metadata" Version="1.8.0" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' ">
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+  <ItemGroup>
+    <ProjectReference Include="..\CompatibilityChecker.Library\CompatibilityChecker.Library.csproj" />
   </ItemGroup>
 
 </Project>

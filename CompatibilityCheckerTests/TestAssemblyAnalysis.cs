@@ -3,7 +3,7 @@
     using System.Collections.ObjectModel;
     using System.Reflection;
     using System.Reflection.Emit;
-    using CompatibilityChecker;
+    using CompatibilityChecker.Library;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]

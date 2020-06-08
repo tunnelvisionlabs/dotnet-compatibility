@@ -57,7 +57,7 @@
     <Compile Include="TestUtility.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CompatibilityChecker\CompatibilityChecker.csproj">
+    <ProjectReference Include="..\CompatibilityChecker.Library\CompatibilityChecker.Library.csproj">
       <Project>{9a4be2ce-277f-41c5-ab31-e5c6ecfd0eeb}</Project>
       <Name>CompatibilityChecker</Name>
     </ProjectReference>

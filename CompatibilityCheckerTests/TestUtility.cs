@@ -5,7 +5,7 @@
     using System.Reflection;
     using System.Reflection.PortableExecutable;
     using System.Security.Cryptography;
-    using CompatibilityChecker;
+    using CompatibilityChecker.Library;
     using File = System.IO.File;
 
     internal static class TestUtility

@@ -12,3 +12,9 @@ TestResults/
 MigrationBackup/
 *.dll
 *.zip
+
+# Visual Studio Code
+.vscode
+
+# MacOS
+.DS_Store
