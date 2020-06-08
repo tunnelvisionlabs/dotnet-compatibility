@@ -1,5 +1,8 @@
 # Binary Compatibility Checker
 
+CompatibilityChecker: [![NuGet Version and Downloads count](https://buildstats.info/nuget/CompatibilityChecker)](https://www.nuget.org/packages/CompatibilityChecker)  
+CompatibilityChecker.Library: [![NuGet Version and Downloads count](https://buildstats.info/nuget/CompatibilityChecker.Library)](https://www.nuget.org/packages/CompatibilityChecker.Library)  
+
 This project implements a binary compatibility checker for .NET assemblies. The goal of this project is to automate the
 process of identifying binary- and source-breaking changes between releases of a .NET library. Libraries with string
 compatibility policies will eventually be able to incorporate this check in the unit tests for the library. The checker
