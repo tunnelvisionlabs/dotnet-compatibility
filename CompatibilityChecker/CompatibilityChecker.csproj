@@ -10,12 +10,17 @@
 
 This library may also feature support for higher levels of compatibility, such as warning users if new overloads of a method could result in an AmbiguousMatchException for users who didn't specify a complete signature when using reflection.
 
-Diagnostics produced by this checker will be categorized by their likely impact on consumers, and by whether the change constitutes a binary- or source-level breaking change. At this time, there are no plans to implement detection or reporting for changes in runtime semantics.</Description>
+Diagnostics produced by this checker will be categorized by their likely impact on consumers, and by whether the change constitutes a binary- or source-level breaking change. At this time, there are no plans to implement detection or reporting for changes in runtime semantics.
+
+    Usage: dotnet compat Reference.dll New.dll</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <IsTool>true</IsTool>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>compat-checker</ToolCommandName>
+    <ToolCommandName>dotnet-compat</ToolCommandName>
     <RepositoryUrl>https://github.com/EraYaN/dotnet-compatibility</RepositoryUrl>
+    <Product>CompatibilityChecker</Product>
+    <Authors>Rack Space Inc.,tunnelvisionlabs,EraYaN</Authors>
+    <Company />
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -26,10 +31,7 @@ Diagnostics produced by this checker will be categorized by their likely impact 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.7.82" />
     <PackageReference Include="System.Reflection.Metadata" Version="1.8.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\CompatibilityChecker.Library\CompatibilityChecker.Library.csproj" />
+    <PackageReference Include="CompatibilityChecker.Library" Version="0.2.0" />
   </ItemGroup>
 
 </Project>

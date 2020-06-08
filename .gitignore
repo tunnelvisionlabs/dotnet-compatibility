@@ -18,3 +18,4 @@ MigrationBackup/
 
 # MacOS
 .DS_Store
+packed/

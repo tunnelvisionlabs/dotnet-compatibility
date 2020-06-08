@@ -1,8 +1,7 @@
 {
   "profiles": {
     "CompatibilityCheckerCoreExample": {
-      "commandName": "Project",
-      "commandLineArgs": "\"..\\..\\..\\..\\Emby.Naming_10.4.3.dll\" \"..\\..\\..\\..\\Emby.Naming_error.dll\"  --azure-pipelines --warnings-only"
+      "commandName": "Project"
     }
   }
 }

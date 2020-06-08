@@ -27,7 +27,7 @@ namespace CompatibilityCheckerCoreCLI
             [Option('w', "warnings-only", Required = false, Default = false, HelpText = "Do not raise errors for Azure Pipelines, it also swallows the return code.")]
             public bool WarningsOnly { get; set; }
 
-            [Usage()]
+            [Usage(ApplicationAlias = "dotnet compat")]
             public static IEnumerable<Example> Examples {
                 get {
                     yield return new Example("Compare versions", new Options { ReferenceAssembly = "Assembly-1.0.0.dll", NewAssembly = "Assembly-1.0.1.dll" });
@@ -40,7 +40,7 @@ namespace CompatibilityCheckerCoreCLI
 
         private static void Main(string[] args)
         {
-            Console.WriteLine("Running CompatibilityCheckerCLI v{0}...", Assembly.GetExecutingAssembly().GetName().Version);
+            Console.WriteLine("Running dotnet-compat v{0}...", Assembly.GetExecutingAssembly().GetName().Version);
             var result = CommandLine.Parser.Default.ParseArguments<Options>(args)
                .WithParsed(opts => RunWithOptions(opts));
 #if DEBUG
