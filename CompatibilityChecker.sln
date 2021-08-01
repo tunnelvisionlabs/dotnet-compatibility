@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompatibilityChecker.Librar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompatibilityChecker", "CompatibilityChecker\CompatibilityChecker.csproj", "{F12B242C-9EC3-4ABC-BFC5-50156E4B5CB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompatibilityChecker.Libary.Tests", "CompatibilityChecker.Libary.Tests\CompatibilityChecker.Libary.Tests.csproj", "{F46154D5-0FC7-4C2A-AB50-B5D81F73E178}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompatibilityChecker.Library.Tests", "CompatibilityChecker.Library.Tests\CompatibilityChecker.Library.Tests.csproj", "{F46154D5-0FC7-4C2A-AB50-B5D81F73E178}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
