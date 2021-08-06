@@ -13,8 +13,10 @@ MigrationBackup/
 *.dll
 *.zip
 
-# Visual Studio Code
+# IDEs
 .vscode
+.idea
+*.iml
 
 # MacOS
 .DS_Store
