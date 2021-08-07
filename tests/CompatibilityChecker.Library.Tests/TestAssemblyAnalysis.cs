@@ -1,17 +1,16 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Reflection.Emit;
 using Lokad.ILPack;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace CompatibilityChecker.Library.Tests
 {
-    [TestClass]
     public class TestAssemblyAnalysis
     {
         private readonly AssemblyGenerator _generator = new();
 
-        [TestMethod]
+        [Fact]
         public void TestAssemblyNameMustNotBeChanged_Pass()
         {
             AssemblyName referenceName = new AssemblyName("Test.Assembly");
@@ -23,10 +22,10 @@ namespace CompatibilityChecker.Library.Tests
             _generator.GenerateAssembly(draftAssemblyBuilder, "Test.Assembly.V2.dll");
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
-            Assert.AreEqual(0, messages.Count);
+            Assert.Empty(messages);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestAssemblyNameMustNotBeChanged_Fail()
         {
             AssemblyName referenceName = new AssemblyName("Test.Assembly");
@@ -40,8 +39,8 @@ namespace CompatibilityChecker.Library.Tests
             _generator.GenerateAssembly(draftAssembly, "Test.Assembly.V2.dll");
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
-            Assert.AreEqual(1, messages.Count);
-            Assert.AreEqual("Error AssemblyNameMustNotBeChanged: The simple name of an assembly cannot change for 'Test.Assembly'.", messages[0].ToString());
+            Assert.Single(messages);
+            Assert.Equal("Error AssemblyNameMustNotBeChanged: The simple name of an assembly cannot change for 'Test.Assembly'.", messages[0].ToString());
         }
     }
 }

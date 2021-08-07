@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <PackageId>CompatibilityChecker</PackageId>
     <Description>This project implements a binary compatibility checker for .NET assemblies. The goal of this project is to automate the process of identifying binary- and source-breaking changes between releases of a .NET library. Libraries with string compatibility policies will eventually be able to incorporate this check in the unit tests for the library. The checker will download a declared previous release of the library from NuGet (or potentially from another source), and verify that the latest build of the library is compatible with the binary interfaces defined by the earlier release.
 

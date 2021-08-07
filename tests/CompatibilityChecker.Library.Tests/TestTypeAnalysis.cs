@@ -1,17 +1,16 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Reflection.Emit;
 using Lokad.ILPack;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace CompatibilityChecker.Library.Tests
 {
-    [TestClass]
     public class TestTypeAnalysis
     {
         private readonly AssemblyGenerator _generator = new();
 
-        [TestMethod]
+        [Fact]
         public void TestAbstractMustNotBeAddedToType_PassUnchanged()
         {
             AssemblyName assemblyName = new AssemblyName("Test.Assembly");
@@ -30,10 +29,10 @@ namespace CompatibilityChecker.Library.Tests
             _generator.GenerateAssembly(newAssemblyBuilder, "Test.Assembly.V2.dll");
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
-            Assert.AreEqual(0, messages.Count);
+            Assert.Empty(messages);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestAbstractMustNotBeAddedToType_PassRemoved()
         {
             AssemblyName assemblyName = new AssemblyName("Test.Assembly");
@@ -52,10 +51,10 @@ namespace CompatibilityChecker.Library.Tests
             _generator.GenerateAssembly(newAssemblyBuilder, "Test.Assembly.V2.dll");
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
-            Assert.AreEqual(0, messages.Count);
+            Assert.Empty(messages);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestAbstractMustNotBeAddedToType_PassNotPublic()
         {
             AssemblyName assemblyName = new AssemblyName("Test.Assembly");
@@ -74,10 +73,10 @@ namespace CompatibilityChecker.Library.Tests
             _generator.GenerateAssembly(newAssemblyBuilder, "Test.Assembly.V2.dll");
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
-            Assert.AreEqual(0, messages.Count);
+            Assert.Empty(messages);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestAbstractMustNotBeAddedToType_Fail()
         {
             AssemblyName assemblyName = new AssemblyName("Test.Assembly");
@@ -96,11 +95,11 @@ namespace CompatibilityChecker.Library.Tests
             _generator.GenerateAssembly(newAssemblyBuilder, "Test.Assembly.V2.dll");
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
-            Assert.AreEqual(1, messages.Count);
-            Assert.AreEqual("Error AbstractMustNotBeAddedToType: The 'abstract' modifier cannot be added to type '.MyType'.", messages[0].ToString());
+            Assert.Single(messages);
+            Assert.Equal("Error AbstractMustNotBeAddedToType: The 'abstract' modifier cannot be added to type '.MyType'.", messages[0].ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSealedMustNotBeAddedToType_PassUnchanged()
         {
             AssemblyName assemblyName = new AssemblyName("Test.Assembly");
@@ -119,10 +118,10 @@ namespace CompatibilityChecker.Library.Tests
             _generator.GenerateAssembly(newAssemblyBuilder, "Test.Assembly.V2.dll");
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
-            Assert.AreEqual(0, messages.Count);
+            Assert.Empty(messages);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSealedMustNotBeAddedToType_PassRemoved()
         {
             AssemblyName assemblyName = new AssemblyName("Test.Assembly");
@@ -141,10 +140,10 @@ namespace CompatibilityChecker.Library.Tests
             _generator.GenerateAssembly(newAssemblyBuilder, "Test.Assembly.V2.dll");
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
-            Assert.AreEqual(0, messages.Count);
+            Assert.Empty(messages);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSealedMustNotBeAddedToType_PassNotPublic()
         {
             AssemblyName assemblyName = new AssemblyName("Test.Assembly");
@@ -163,10 +162,10 @@ namespace CompatibilityChecker.Library.Tests
             _generator.GenerateAssembly(newAssemblyBuilder, "Test.Assembly.V2.dll");
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
-            Assert.AreEqual(0, messages.Count);
+            Assert.Empty(messages);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSealedMustNotBeAddedToType_Fail()
         {
             AssemblyName assemblyName = new AssemblyName("Test.Assembly");
@@ -185,8 +184,8 @@ namespace CompatibilityChecker.Library.Tests
             _generator.GenerateAssembly(newAssemblyBuilder, "Test.Assembly.V2.dll");
 
             ReadOnlyCollection<Message> messages = TestUtility.AnalyzeAssemblies("Test.Assembly.dll", "Test.Assembly.V2.dll");
-            Assert.AreEqual(1, messages.Count);
-            Assert.AreEqual("Error SealedMustNotBeAddedToType: The 'sealed' modifier cannot be added to type '.MyType'.", messages[0].ToString());
+            Assert.Single(messages);
+            Assert.Equal("Error SealedMustNotBeAddedToType: The 'sealed' modifier cannot be added to type '.MyType'.", messages[0].ToString());
         }
     }
 }
