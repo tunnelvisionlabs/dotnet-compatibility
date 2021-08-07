@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CompatibilityChecker.Library\CompatibilityChecker.Library.csproj" />
+    <ProjectReference Include="..\..\CompatibilityChecker.Library\CompatibilityChecker.Library.csproj" />
   </ItemGroup>
 
 </Project>
