@@ -1,26 +1,30 @@
-﻿namespace CompatibilityChecker.Library
+namespace CompatibilityChecker.Library
 {
     using System.Collections.Immutable;
     using System.Reflection.Metadata;
 
     public struct PropertySignature
     {
-        private readonly BlobReader _reader;
+        private readonly BlobReader reader;
 
         public PropertySignature(BlobReader blobReader)
         {
-            _reader = blobReader;
+            reader = blobReader;
         }
 
-        public SignatureHeader Header {
-            get {
-                return _reader.ReadSignatureHeader();
+        public SignatureHeader Header
+        {
+            get
+            {
+                return reader.ReadSignatureHeader();
             }
         }
 
-        public ImmutableArray<CustomModifierSignature> CustomModifiers {
-            get {
-                var reader = _reader;
+        public ImmutableArray<CustomModifierSignature> CustomModifiers
+        {
+            get
+            {
+                var reader = this.reader;
 
                 // signature header
                 reader.ReadSignatureHeader();
@@ -40,9 +44,11 @@
             }
         }
 
-        public TypeSignature PropertyType {
-            get {
-                BlobReader reader = _reader;
+        public TypeSignature PropertyType
+        {
+            get
+            {
+                var reader = this.reader;
 
                 // header
                 reader.ReadSignatureHeader();
@@ -51,21 +57,27 @@
                 reader.ReadCompressedInteger();
 
                 while (reader.IsCustomModifier())
+                {
                     reader = new CustomModifierSignature(reader).Skip();
+                }
 
                 return new TypeSignature(reader);
             }
         }
 
-        public ImmutableArray<ParameterSignature> Parameters {
-            get {
-                BlobReader reader = _reader;
+        public ImmutableArray<ParameterSignature> Parameters
+        {
+            get
+            {
+                var reader = this.reader;
                 reader.ReadSignatureHeader();
 
                 int parameterCount = reader.ReadCompressedInteger();
 
                 while (reader.IsCustomModifier())
+                {
                     reader = new CustomModifierSignature(reader).Skip();
+                }
 
                 reader = new TypeSignature(reader).Skip();
 
@@ -83,18 +95,22 @@
 
         public BlobReader Skip()
         {
-            BlobReader reader = _reader;
+            var reader = this.reader;
             reader.ReadSignatureHeader();
 
             int parameterCount = reader.ReadCompressedInteger();
 
             while (reader.IsCustomModifier())
+            {
                 reader = new CustomModifierSignature(reader).Skip();
+            }
 
             reader = new TypeSignature(reader).Skip();
 
             for (int i = 0; i < parameterCount; i++)
+            {
                 reader = new ParameterSignature(reader).Skip();
+            }
 
             return reader;
         }

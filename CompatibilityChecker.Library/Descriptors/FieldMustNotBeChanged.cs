@@ -9,16 +9,16 @@
     internal class FieldMustNotBeChanged : CompatibilityDescriptor
     {
         private const string Id = nameof(FieldMustNotBeChanged);
-        private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "Publicly-accessible field '{0}' was renamed or removed.";
-        private static readonly string _category = Categories.Field;
-        private static readonly Severity _defaultSeverity = Severity.Error;
-        private static readonly string _description = null;
+        private static new readonly string Title = TitleHelper.GenerateTitle(Id);
+        private static new readonly string MessageFormat = "Publicly-accessible field '{0}' was renamed or removed.";
+        private static new readonly string Category = Categories.Field;
+        private static new readonly Severity DefaultSeverity = Severity.Error;
+        private static new readonly string Description = null;
 
-        private static readonly FieldMustNotBeChanged Instance = new FieldMustNotBeChanged();
+        private static readonly FieldMustNotBeChanged Instance = new ();
 
         private FieldMustNotBeChanged()
-            : base(Id, _title, _messageFormat, _category, _defaultSeverity, _description)
+            : base(Id, Title, MessageFormat, Category, DefaultSeverity, Description)
         {
         }
 

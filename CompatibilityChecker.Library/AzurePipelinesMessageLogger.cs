@@ -1,14 +1,14 @@
-﻿namespace CompatibilityChecker.Library
+namespace CompatibilityChecker.Library
 {
     using System;
 
     public class AzurePipelinesMessageLogger : IMessageLogger
     {
-        Severity? maxSeverity;
+        private Severity? maxSeverity;
 
-        public AzurePipelinesMessageLogger(Severity? MaxSeverity)
+        public AzurePipelinesMessageLogger(Severity? maxSeverity)
         {
-            maxSeverity = MaxSeverity;
+            this.maxSeverity = maxSeverity;
         }
 
         public AzurePipelinesMessageLogger()
@@ -27,6 +27,7 @@
             {
                 sev = message.Severity;
             }
+
             switch (sev)
             {
                 case Severity.Error:
@@ -39,7 +40,6 @@
                     Console.WriteLine(message);
                     break;
             }
-                
         }
     }
 }

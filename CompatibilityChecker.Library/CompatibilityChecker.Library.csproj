@@ -1,19 +1,31 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <Version>0.2.0</Version>
+    <LangVersion>latest</LangVersion>
+    <Version>0.3.0</Version>
     <Description>This project implements a binary compatibility checker for .NET assemblies. The goal of this project is to automate the process of identifying binary- and source-breaking changes between releases of a .NET library. Libraries with string compatibility policies will eventually be able to incorporate this check in the unit tests for the library. The checker will download a declared previous release of the library from NuGet (or potentially from another source), and verify that the latest build of the library is compatible with the binary interfaces defined by the earlier release.
 
-This library may also feature support for higher levels of compatibility, such as warning users if new overloads of a method could result in an AmbiguousMatchException for users who didn't specify a complete signature when using reflection.
+      This library may also feature support for higher levels of compatibility, such as warning users if new overloads of a method could result in an AmbiguousMatchException for users who didn't specify a complete signature when using reflection.
 
-Diagnostics produced by this checker will be categorized by their likely impact on consumers, and by whether the change constitutes a binary- or source-level breaking change. At this time, there are no plans to implement detection or reporting for changes in runtime semantics.</Description>
+      Diagnostics produced by this checker will be categorized by their likely impact on consumers, and by whether the change constitutes a binary- or source-level breaking change. At this time, there are no plans to implement detection or reporting for changes in runtime semantics.
+    </Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/EraYaN/dotnet-compatibility</RepositoryUrl>
     <Authors>tunnelvisionlabs; EraYaN</Authors>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
     <PackageReference Include="System.Reflection.Metadata" Version="5.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />

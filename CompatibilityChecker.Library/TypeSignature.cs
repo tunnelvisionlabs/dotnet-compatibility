@@ -1,4 +1,4 @@
-﻿namespace CompatibilityChecker.Library
+namespace CompatibilityChecker.Library
 {
     using System;
     using System.Collections.Immutable;
@@ -9,16 +9,18 @@
     /// </summary>
     public struct TypeSignature
     {
-        private readonly BlobReader _reader;
+        private readonly BlobReader reader;
 
         public TypeSignature(BlobReader blobReader)
         {
-            _reader = blobReader;
+            reader = blobReader;
         }
 
-        public SignatureTypeCode TypeCode {
-            get {
-                return _reader.ReadSignatureTypeCode();
+        public SignatureTypeCode TypeCode
+        {
+            get
+            {
+                return reader.ReadSignatureTypeCode();
             }
         }
 
@@ -29,9 +31,11 @@
         /// <para>If <see cref="TypeCode"/> is not <see cref="SignatureTypeCode.GenericTypeParameter"/> or
         /// <see cref="SignatureTypeCode.GenericMethodParameter"/>.</para>
         /// </exception>
-        public int GenericParameterIndex {
-            get {
-                BlobReader reader = _reader;
+        public int GenericParameterIndex
+        {
+            get
+            {
+                var reader = this.reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
 
                 switch (typeCode)
@@ -53,9 +57,11 @@
         /// <para>If <see cref="TypeCode"/> is not <see cref="SignatureTypeCode.TypeHandle"/> or
         /// <see cref="SignatureTypeCode.GenericTypeInstance"/>.</para>
         /// </exception>
-        public Handle TypeHandle {
-            get {
-                BlobReader reader = _reader;
+        public Handle TypeHandle
+        {
+            get
+            {
+                var reader = this.reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
 
                 switch (typeCode)
@@ -73,12 +79,16 @@
             }
         }
 
-        public ImmutableArray<TypeSignature> GenericTypeArguments {
-            get {
-                BlobReader reader = _reader;
+        public ImmutableArray<TypeSignature> GenericTypeArguments
+        {
+            get
+            {
+                var reader = this.reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
                 if (typeCode != SignatureTypeCode.GenericTypeInstance)
+                {
                     throw new InvalidOperationException(string.Format("Type code '{0}' does not have generic arguments.", typeCode));
+                }
 
                 reader.ReadSignatureTypeCode();
                 reader.ReadTypeHandle();
@@ -87,7 +97,7 @@
                 var builder = ImmutableArray.CreateBuilder<TypeSignature>(genericArgumentCount);
                 for (int i = 0; i < genericArgumentCount; i++)
                 {
-                    TypeSignature argument = new TypeSignature(reader);
+                    TypeSignature argument = new (reader);
                     builder.Add(argument);
                     reader = argument.Skip();
                 }
@@ -96,9 +106,11 @@
             }
         }
 
-        public ImmutableArray<CustomModifierSignature> CustomModifiers {
-            get {
-                BlobReader reader = _reader;
+        public ImmutableArray<CustomModifierSignature> CustomModifiers
+        {
+            get
+            {
+                var reader = this.reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
 
                 switch (typeCode)
@@ -123,9 +135,11 @@
             }
         }
 
-        public TypeSignature ElementType {
-            get {
-                BlobReader reader = _reader;
+        public TypeSignature ElementType
+        {
+            get
+            {
+                var reader = this.reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
 
                 switch (typeCode)
@@ -135,16 +149,22 @@
 
                     case SignatureTypeCode.Pointer:
                         while (reader.IsCustomModifier())
+                        {
                             reader = new CustomModifierSignature(reader).Skip();
+                        }
 
                         if (reader.PeekSignatureTypeCode() == SignatureTypeCode.Void)
+                        {
                             goto default;
+                        }
 
                         return new TypeSignature(reader);
 
                     case SignatureTypeCode.SZArray:
                         while (reader.IsCustomModifier())
+                        {
                             reader = new CustomModifierSignature(reader).Skip();
+                        }
 
                         return new TypeSignature(reader);
 
@@ -154,9 +174,11 @@
             }
         }
 
-        public ArrayShapeSignature ArrayShape {
-            get {
-                BlobReader reader = _reader;
+        public ArrayShapeSignature ArrayShape
+        {
+            get
+            {
+                var reader = this.reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
 
                 switch (typeCode)
@@ -172,9 +194,11 @@
             }
         }
 
-        public MethodSignature MethodSignature {
-            get {
-                BlobReader reader = _reader;
+        public MethodSignature MethodSignature
+        {
+            get
+            {
+                var reader = this.reader;
                 SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
 
                 switch (typeCode)
@@ -190,7 +214,7 @@
 
         public BlobReader Skip()
         {
-            BlobReader reader = _reader;
+            var reader = this.reader;
             SignatureTypeCode typeCode = reader.ReadSignatureTypeCode();
 
             switch (typeCode)
@@ -229,7 +253,9 @@
 
                     int argumentCount = reader.ReadCompressedInteger();
                     for (int i = 0; i < argumentCount; i++)
+                    {
                         reader = new TypeSignature(reader).Skip();
+                    }
 
                     break;
 
@@ -245,18 +271,26 @@
 
                 case SignatureTypeCode.Pointer:
                     while (reader.IsCustomModifier())
+                    {
                         reader = new CustomModifierSignature(reader).Skip();
+                    }
 
                     if (reader.PeekSignatureTypeCode() == SignatureTypeCode.Void)
+                    {
                         reader.ReadSignatureTypeCode();
+                    }
                     else
+                    {
                         reader = new TypeSignature(reader).Skip();
+                    }
 
                     break;
 
                 case SignatureTypeCode.SZArray:
                     while (reader.IsCustomModifier())
+                    {
                         reader = new CustomModifierSignature(reader).Skip();
+                    }
 
                     reader = new TypeSignature(reader).Skip();
                     break;

@@ -4,22 +4,26 @@
 
     public struct CustomModifierSignature
     {
-        private readonly BlobReader _reader;
+        private readonly BlobReader reader;
 
         public CustomModifierSignature(BlobReader blobReader)
         {
-            _reader = blobReader;
+            reader = blobReader;
         }
 
-        public bool IsRequired {
-            get {
-                return _reader.ReadSignatureTypeCode() == SignatureTypeCode.RequiredModifier;
+        public bool IsRequired
+        {
+            get
+            {
+                return reader.ReadSignatureTypeCode() == SignatureTypeCode.RequiredModifier;
             }
         }
 
-        public Handle TypeHandle {
-            get {
-                BlobReader reader = _reader;
+        public Handle TypeHandle
+        {
+            get
+            {
+                var reader = this.reader;
                 reader.ReadSignatureTypeCode();
                 return reader.ReadTypeHandle();
             }
@@ -27,7 +31,7 @@
 
         public BlobReader Skip()
         {
-            var reader = _reader;
+            var reader = this.reader;
             reader.ReadSignatureTypeCode();
             reader.ReadTypeHandle();
             return reader;

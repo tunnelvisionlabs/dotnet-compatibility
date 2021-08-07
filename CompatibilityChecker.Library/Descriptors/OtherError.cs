@@ -8,18 +8,17 @@
     internal class OtherError : CompatibilityDescriptor
     {
         private const string Id = nameof(OtherError);
-        private static readonly string _title = TitleHelper.GenerateTitle(Id);
+        private static new readonly string Title = TitleHelper.GenerateTitle(Id);
 
-        private static readonly string _messageFormat = "Other error occured. {0}";
-        private static readonly string _category = Categories.Other;
-        private static readonly Severity _defaultSeverity = Severity.Error;
-        private static readonly string _description = null;
+        private static new readonly string MessageFormat = "Other error occured. {0}";
+        private static new readonly string Category = Categories.Other;
+        private static new readonly Severity DefaultSeverity = Severity.Error;
+        private static new readonly string Description = null;
 
-
-        private static readonly OtherError Instance = new OtherError();
+        private static readonly OtherError Instance = new ();
 
         private OtherError()
-            : base(Id, _title, _messageFormat, _category, _defaultSeverity, _description)
+            : base(Id, Title, MessageFormat, Category, DefaultSeverity, Description)
         {
         }
 

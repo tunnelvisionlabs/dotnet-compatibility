@@ -9,16 +9,16 @@
     internal class PropertySetterMustNotBeRemoved : CompatibilityDescriptor
     {
         private const string Id = nameof(PropertySetterMustNotBeRemoved);
-        private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "Publicly-accessible property setter '{0}' cannot be removed.";
-        private static readonly string _category = Categories.Event;
-        private static readonly Severity _defaultSeverity = Severity.Error;
-        private static readonly string _description = null;
+        private static new readonly string Title = TitleHelper.GenerateTitle(Id);
+        private static new readonly string MessageFormat = "Publicly-accessible property setter '{0}' cannot be removed.";
+        private static new readonly string Category = Categories.Event;
+        private static new readonly Severity DefaultSeverity = Severity.Error;
+        private static new readonly string Description = null;
 
-        private static readonly PropertySetterMustNotBeRemoved Instance = new PropertySetterMustNotBeRemoved();
+        private static readonly PropertySetterMustNotBeRemoved Instance = new ();
 
         private PropertySetterMustNotBeRemoved()
-            : base(Id, _title, _messageFormat, _category, _defaultSeverity, _description)
+            : base(Id, Title, MessageFormat, Category, DefaultSeverity, Description)
         {
         }
 

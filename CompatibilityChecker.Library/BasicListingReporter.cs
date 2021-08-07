@@ -1,51 +1,52 @@
-﻿namespace CompatibilityChecker.Library
+namespace CompatibilityChecker.Library
 {
     using System;
     using System.Collections.Generic;
 
     internal class BasicListingReporter : IMessageReporter
     {
-        IMessageLogger _logger;
+        private IMessageLogger logger;
 
-        List<Message> _reportedMessages;
+        private List<Message> reportedMessages;
 
-        int _severityError = 0;
-        int _severityWarning = 0;
-        int _severityInformation = 0;
-        int _severityDisabled = 0;
+        private int severityError = 0;
+        private int severityWarning = 0;
+        private int severityInformation = 0;
+        private int severityDisabled = 0;
 
-        IEnumerable<Message> IMessageReporter.ReportedMessages => _reportedMessages;
+        IEnumerable<Message> IMessageReporter.ReportedMessages => reportedMessages;
 
-        IReportStatistics IMessageReporter.Statistics => new BasicListingStatistics(_severityError, _severityWarning, _severityInformation, _severityDisabled);
+        IReportStatistics IMessageReporter.Statistics => new BasicListingStatistics(severityError, severityWarning, severityInformation, severityDisabled);
 
         public BasicListingReporter(IMessageLogger logger)
         {
-            _logger = logger;
+            this.logger = logger;
 
-            _reportedMessages = new List<Message>();
+            reportedMessages = new List<Message>();
         }
-        
+
         void IMessageReporter.Report(Message message)
         {
             switch (message.Severity)
             {
                 case Severity.Error:
-                    _severityError++;
+                    severityError++;
                     break;
                 case Severity.Warning:
-                    _severityWarning++;
+                    severityWarning++;
                     break;
                 case Severity.Information:
-                    _severityInformation++;
+                    severityInformation++;
                     break;
                 case Severity.Disabled:
-                    _severityDisabled++;
+                    severityDisabled++;
                     break;
                 default:
                     throw new ArgumentException(string.Format("Severity {0} is not supported by this Message Reporter.", message.Severity));
             }
-            _reportedMessages.Add(message);
-            _logger.Report(message);
+
+            reportedMessages.Add(message);
+            logger.Report(message);
         }
     }
 }

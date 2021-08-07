@@ -1,3 +1,3 @@
 using System.Runtime.CompilerServices;
 
-[assembly:InternalsVisibleTo("CompatibilityChecker.Library.Tests")]
+[assembly: InternalsVisibleTo("CompatibilityChecker.Library.Tests")]

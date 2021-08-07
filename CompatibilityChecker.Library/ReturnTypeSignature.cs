@@ -6,16 +6,18 @@
 
     public struct ReturnTypeSignature
     {
-        private readonly BlobReader _reader;
+        private readonly BlobReader reader;
 
         public ReturnTypeSignature(BlobReader blobReader)
         {
-            _reader = blobReader;
+            reader = blobReader;
         }
 
-        public ImmutableArray<CustomModifierSignature> CustomModifiers {
-            get {
-                var reader = _reader;
+        public ImmutableArray<CustomModifierSignature> CustomModifiers
+        {
+            get
+            {
+                var reader = this.reader;
                 var builder = ImmutableArray.CreateBuilder<CustomModifierSignature>();
                 while (reader.IsCustomModifier())
                 {
@@ -28,21 +30,29 @@
             }
         }
 
-        public bool IsByRef {
-            get {
-                var reader = _reader;
+        public bool IsByRef
+        {
+            get
+            {
+                var reader = this.reader;
                 while (reader.IsCustomModifier())
+                {
                     reader = new CustomModifierSignature(reader).Skip();
+                }
 
                 return reader.ReadSignatureTypeCode() == SignatureTypeCode.ByReference;
             }
         }
 
-        public SignatureTypeCode TypeCode {
-            get {
-                var reader = _reader;
+        public SignatureTypeCode TypeCode
+        {
+            get
+            {
+                var reader = this.reader;
                 while (reader.IsCustomModifier())
+                {
                     reader = new CustomModifierSignature(reader).Skip();
+                }
 
                 switch (reader.PeekSignatureTypeCode())
                 {
@@ -60,23 +70,31 @@
             }
         }
 
-        public bool IsTypedByRef {
-            get {
+        public bool IsTypedByRef
+        {
+            get
+            {
                 return TypeCode == SignatureTypeCode.TypedReference;
             }
         }
 
-        public bool IsVoid {
-            get {
+        public bool IsVoid
+        {
+            get
+            {
                 return TypeCode == SignatureTypeCode.Void;
             }
         }
 
-        public TypeSignature Type {
-            get {
-                var reader = _reader;
+        public TypeSignature Type
+        {
+            get
+            {
+                var reader = this.reader;
                 while (reader.IsCustomModifier())
+                {
                     reader = new CustomModifierSignature(reader).Skip();
+                }
 
                 switch (reader.PeekSignatureTypeCode())
                 {
@@ -96,9 +114,11 @@
 
         public BlobReader Skip()
         {
-            var reader = _reader;
+            var reader = this.reader;
             while (reader.IsCustomModifier())
+            {
                 reader = new CustomModifierSignature(reader).Skip();
+            }
 
             switch (reader.PeekSignatureTypeCode())
             {
