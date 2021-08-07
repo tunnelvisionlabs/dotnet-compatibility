@@ -14,16 +14,16 @@
     internal class PublicKeyMustNotBeChanged : CompatibilityDescriptor
     {
         private const string Id = nameof(PublicKeyMustNotBeChanged);
-        private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "The public key of a strong-named assembly '{0}' cannot change.";
-        private static readonly string _category = Categories.Assembly;
-        private static readonly Severity _defaultSeverity = Severity.Error;
-        private static readonly string _description = null;
+        private static new readonly string Title = TitleHelper.GenerateTitle(Id);
+        private static new readonly string MessageFormat = "The public key of a strong-named assembly '{0}' cannot change.";
+        private static new readonly string Category = Categories.Assembly;
+        private static new readonly Severity DefaultSeverity = Severity.Error;
+        private static new readonly string Description = null;
 
-        private static readonly PublicKeyMustNotBeChanged Instance = new PublicKeyMustNotBeChanged();
+        private static readonly PublicKeyMustNotBeChanged Instance = new ();
 
         private PublicKeyMustNotBeChanged()
-            : base(Id, _title, _messageFormat, _category, _defaultSeverity, _description)
+            : base(Id, Title, MessageFormat, Category, DefaultSeverity, Description)
         {
         }
 

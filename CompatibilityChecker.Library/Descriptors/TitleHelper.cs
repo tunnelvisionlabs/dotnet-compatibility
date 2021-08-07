@@ -6,7 +6,7 @@
     {
         internal static string GenerateTitle(string ruleId)
         {
-            StringBuilder builder = new StringBuilder();
+            StringBuilder builder = new ();
             foreach (char c in ruleId)
             {
                 if (builder.Length == 0)

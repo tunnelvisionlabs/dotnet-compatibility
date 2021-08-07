@@ -9,6 +9,5 @@ namespace CompatibilityChecker.Library
         IReportStatistics Statistics { get; }
 
         void Report(Message message);
-        
     }
 }

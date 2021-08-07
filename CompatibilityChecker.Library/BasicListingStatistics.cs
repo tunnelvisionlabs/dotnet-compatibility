@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace CompatibilityChecker.Library
 {
-    class BasicListingStatistics : IReportStatistics
+    internal class BasicListingStatistics : IReportStatistics
     {
-        (int error, int warning, int information, int disabled) _severityCounts;
-        (int error, int warning, int information, int disabled) IReportStatistics.SeverityCounts => _severityCounts;
+        private (int error, int warning, int information, int disabled) severityCounts;
 
-        public BasicListingStatistics(int SeverityError, int SeverityWarning, int SeverityInformation, int SeverityDisabled)
+        (int error, int warning, int information, int disabled) IReportStatistics.SeverityCounts => severityCounts;
+
+        public BasicListingStatistics(int severityError, int severityWarning, int severityInformation, int severityDisabled)
         {
-            _severityCounts = (error: SeverityError, warning: SeverityWarning, information: SeverityInformation, disabled: SeverityDisabled);
+            severityCounts = (error: severityError, warning: severityWarning, information: severityInformation, disabled: severityDisabled);
         }
     }
 }

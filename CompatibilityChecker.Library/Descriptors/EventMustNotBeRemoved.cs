@@ -1,4 +1,4 @@
-﻿namespace CompatibilityChecker.Library.Descriptors
+namespace CompatibilityChecker.Library.Descriptors
 {
     using System.Reflection.Metadata;
     using System.Runtime.CompilerServices;
@@ -9,16 +9,16 @@
     internal class EventMustNotBeRemoved : CompatibilityDescriptor
     {
         private const string Id = nameof(EventMustNotBeRemoved);
-        private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "Publicly-accessible event '{0}' cannot be removed.";
-        private static readonly string _category = Categories.Event;
-        private static readonly Severity _defaultSeverity = Severity.Error;
-        private static readonly string _description = null;
+        private static new readonly string Title = TitleHelper.GenerateTitle(Id);
+        private static new readonly string MessageFormat = "Publicly-accessible event '{0}' cannot be removed.";
+        private static new readonly string Category = Categories.Event;
+        private static new readonly Severity DefaultSeverity = Severity.Error;
+        private static new readonly string Description = null;
 
-        private static readonly EventMustNotBeRemoved Instance = new EventMustNotBeRemoved();
+        private static readonly EventMustNotBeRemoved Instance = new ();
 
         private EventMustNotBeRemoved()
-            : base(Id, _title, _messageFormat, _category, _defaultSeverity, _description)
+            : base(Id, Title, MessageFormat, Category, DefaultSeverity, Description)
         {
         }
 

@@ -5,45 +5,53 @@
 
     public struct ParameterSignature
     {
-        private readonly BlobReader _reader;
+        private readonly BlobReader reader;
 
         public ParameterSignature(BlobReader blobReader)
         {
-            _reader = blobReader;
+            reader = blobReader;
         }
 
-        public ImmutableArray<CustomModifierSignature> CustomModifiers {
-            get {
+        public ImmutableArray<CustomModifierSignature> CustomModifiers
+        {
+            get
+            {
                 // this is always a restriction of RetType
-                return new ReturnTypeSignature(_reader).CustomModifiers;
+                return new ReturnTypeSignature(reader).CustomModifiers;
             }
         }
 
-        public bool IsByRef {
-            get {
+        public bool IsByRef
+        {
+            get
+            {
                 // this is always a restriction of RetType
-                return new ReturnTypeSignature(_reader).IsByRef;
+                return new ReturnTypeSignature(reader).IsByRef;
             }
         }
 
-        public SignatureTypeCode TypeCode {
-            get {
+        public SignatureTypeCode TypeCode
+        {
+            get
+            {
                 // this is always a restriction of RetType
-                return new ReturnTypeSignature(_reader).TypeCode;
+                return new ReturnTypeSignature(reader).TypeCode;
             }
         }
 
-        public TypeSignature Type {
-            get {
+        public TypeSignature Type
+        {
+            get
+            {
                 // this is always a restriction of RetType
-                return new ReturnTypeSignature(_reader).Type;
+                return new ReturnTypeSignature(reader).Type;
             }
         }
 
         public BlobReader Skip()
         {
             // this is always a restriction of RetType
-            return new ReturnTypeSignature(_reader).Skip();
+            return new ReturnTypeSignature(reader).Skip();
         }
     }
 }

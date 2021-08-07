@@ -1,4 +1,4 @@
-﻿namespace CompatibilityChecker.Library.Descriptors
+namespace CompatibilityChecker.Library.Descriptors
 {
     using System.Reflection.Metadata;
     using System.Runtime.CompilerServices;
@@ -9,16 +9,16 @@
     internal class BaseTypeMustNotChange : CompatibilityDescriptor
     {
         private const string Id = nameof(BaseTypeMustNotChange);
-        private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "Base type of '{0}' must not be changed.";
-        private static readonly string _category = Categories.Type;
-        private static readonly Severity _defaultSeverity = Severity.Error;
-        private static readonly string _description = null;
+        private static new readonly string Title = TitleHelper.GenerateTitle(Id);
+        private static new readonly string MessageFormat = "Base type of '{0}' must not be changed.";
+        private static new readonly string Category = Categories.Type;
+        private static new readonly Severity DefaultSeverity = Severity.Error;
+        private static new readonly string Description = null;
 
-        private static readonly BaseTypeMustNotChange Instance = new BaseTypeMustNotChange();
+        private static readonly BaseTypeMustNotChange Instance = new ();
 
         private BaseTypeMustNotChange()
-            : base(Id, _title, _messageFormat, _category, _defaultSeverity, _description)
+            : base(Id, Title, MessageFormat, Category, DefaultSeverity, Description)
         {
         }
 

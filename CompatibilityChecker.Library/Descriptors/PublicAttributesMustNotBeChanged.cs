@@ -6,16 +6,16 @@
     internal class PublicAttributesMustNotBeChanged : CompatibilityDescriptor
     {
         private const string Id = nameof(PublicAttributesMustNotBeChanged);
-        private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "Attributes of publicly visible type '{0}' changed.";
-        private static readonly string _category = Categories.Attribute;
-        private static readonly Severity _defaultSeverity = Severity.Error;
-        private static readonly string _description = null;
+        private static new readonly string Title = TitleHelper.GenerateTitle(Id);
+        private static new readonly string MessageFormat = "Attributes of publicly visible type '{0}' changed.";
+        private static new readonly string Category = Categories.Attribute;
+        private static new readonly Severity DefaultSeverity = Severity.Error;
+        private static new readonly string Description = null;
 
-        private static readonly PublicAttributesMustNotBeChanged Instance = new PublicAttributesMustNotBeChanged();
+        private static readonly PublicAttributesMustNotBeChanged Instance = new ();
 
         private PublicAttributesMustNotBeChanged()
-            : base(Id, _title, _messageFormat, _category, _defaultSeverity, _description)
+            : base(Id, Title, MessageFormat, Category, DefaultSeverity, Description)
         {
         }
 

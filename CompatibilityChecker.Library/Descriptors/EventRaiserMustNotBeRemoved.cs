@@ -9,16 +9,16 @@
     internal class EventRaiserMustNotBeRemoved : CompatibilityDescriptor
     {
         private const string Id = nameof(EventRaiserMustNotBeRemoved);
-        private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "Publicly-accessible event '{0}' cannot have its raiser removed.";
-        private static readonly string _category = Categories.Event;
-        private static readonly Severity _defaultSeverity = Severity.Error;
-        private static readonly string _description = null;
+        private static new readonly string Title = TitleHelper.GenerateTitle(Id);
+        private static new readonly string MessageFormat = "Publicly-accessible event '{0}' cannot have its raiser removed.";
+        private static new readonly string Category = Categories.Event;
+        private static new readonly Severity DefaultSeverity = Severity.Error;
+        private static new readonly string Description = null;
 
-        private static readonly EventRaiserMustNotBeRemoved Instance = new EventRaiserMustNotBeRemoved();
+        private static readonly EventRaiserMustNotBeRemoved Instance = new ();
 
         private EventRaiserMustNotBeRemoved()
-            : base(Id, _title, _messageFormat, _category, _defaultSeverity, _description)
+            : base(Id, Title, MessageFormat, Category, DefaultSeverity, Description)
         {
         }
 

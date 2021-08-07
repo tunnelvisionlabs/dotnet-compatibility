@@ -1,4 +1,4 @@
-﻿namespace CompatibilityChecker.Library.Descriptors
+namespace CompatibilityChecker.Library.Descriptors
 {
     using System;
 
@@ -7,13 +7,24 @@
         protected CompatibilityDescriptor(string ruleId, string title, string messageFormat, string category, Severity defaultSeverity, string description = null)
         {
             if (ruleId == null)
-                throw new ArgumentNullException("ruleId");
+            {
+                throw new ArgumentNullException(nameof(ruleId));
+            }
+
             if (title == null)
-                throw new ArgumentNullException("title");
+            {
+                throw new ArgumentNullException(nameof(title));
+            }
+
             if (messageFormat == null)
-                throw new ArgumentNullException("messageFormat");
+            {
+                throw new ArgumentNullException(nameof(messageFormat));
+            }
+
             if (category == null)
-                throw new ArgumentNullException("category");
+            {
+                throw new ArgumentNullException(nameof(category));
+            }
 
             RuleId = ruleId;
             Title = title;
@@ -23,27 +34,33 @@
             Description = description;
         }
 
-        public string RuleId {
+        public string RuleId
+        {
             get;
         }
 
-        public string Title {
+        public string Title
+        {
             get;
         }
 
-        public string MessageFormat {
+        public string MessageFormat
+        {
             get;
         }
 
-        public string Category {
+        public string Category
+        {
             get;
         }
 
-        public Severity DefaultSeverity {
+        public Severity DefaultSeverity
+        {
             get;
         }
 
-        public string Description {
+        public string Description
+        {
             get;
         }
     }

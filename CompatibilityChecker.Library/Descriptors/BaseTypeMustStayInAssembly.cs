@@ -9,16 +9,16 @@
     internal class BaseTypeMustStayInAssembly : CompatibilityDescriptor
     {
         private const string Id = nameof(BaseTypeMustStayInAssembly);
-        private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "Base type of '{0}' must not be moved outside the assembly.";
-        private static readonly string _category = Categories.Type;
-        private static readonly Severity _defaultSeverity = Severity.Error;
-        private static readonly string _description = null;
+        private static new readonly string Title = TitleHelper.GenerateTitle(Id);
+        private static new readonly string MessageFormat = "Base type of '{0}' must not be moved outside the assembly.";
+        private static new readonly string Category = Categories.Type;
+        private static new readonly Severity DefaultSeverity = Severity.Error;
+        private static new readonly string Description = null;
 
-        private static readonly BaseTypeMustStayInAssembly Instance = new BaseTypeMustStayInAssembly();
+        private static readonly BaseTypeMustStayInAssembly Instance = new ();
 
         private BaseTypeMustStayInAssembly()
-            : base(Id, _title, _messageFormat, _category, _defaultSeverity, _description)
+            : base(Id, Title, MessageFormat, Category, DefaultSeverity, Description)
         {
         }
 

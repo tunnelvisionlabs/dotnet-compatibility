@@ -12,27 +12,25 @@ namespace CompatibilityChecker.Library.Tests
     {
         public static ReadOnlyCollection<Message> AnalyzeAssemblies(string referenceAssemblyFile, string newAssemblyFile)
         {
-            using PEReader referenceAssembly = new(File.OpenRead(referenceAssemblyFile));
-            using PEReader newAssembly = new(File.OpenRead(newAssemblyFile));
-
+            using PEReader referenceAssembly = new (File.OpenRead(referenceAssemblyFile));
+            using PEReader newAssembly = new (File.OpenRead(newAssemblyFile));
 
             return AnalyzeAssemblies(referenceAssembly, newAssembly);
         }
 
         public static ReadOnlyCollection<Message> AnalyzeAssemblies(ImmutableArray<byte> referenceAssemblyBytes, ImmutableArray<byte> newAssemblyBytes)
         {
-            using PEReader referenceAssembly = new(referenceAssemblyBytes);
-            using PEReader newAssembly = new(newAssemblyBytes);
-
+            using PEReader referenceAssembly = new (referenceAssemblyBytes);
+            using PEReader newAssembly = new (newAssemblyBytes);
 
             return AnalyzeAssemblies(referenceAssembly, newAssembly);
         }
 
         public static ReadOnlyCollection<Message> AnalyzeAssemblies(PEReader referenceAssembly, PEReader newAssembly)
         {
-            TestMessageLogger logger = new();
-            BasicListingReporter reporter = new(logger);
-            Analyzer analyzer = new(referenceAssembly, newAssembly, reporter, logger);
+            TestMessageLogger logger = new ();
+            BasicListingReporter reporter = new (logger);
+            Analyzer analyzer = new (referenceAssembly, newAssembly, reporter, logger);
             analyzer.Run();
 
             return logger.RawMessages;
@@ -40,17 +38,17 @@ namespace CompatibilityChecker.Library.Tests
 
         private class TestMessageLogger : IMessageLogger
         {
-            private readonly List<Message> _rawMessages = new();
-            private readonly List<string> _messages = new();
+            private readonly List<Message> rawMessages = new ();
+            private readonly List<string> messages = new ();
 
-            public ReadOnlyCollection<Message> RawMessages => _rawMessages.AsReadOnly();
+            public ReadOnlyCollection<Message> RawMessages => rawMessages.AsReadOnly();
 
-            public ReadOnlyCollection<string> Messages => _messages.AsReadOnly();
+            public ReadOnlyCollection<string> Messages => messages.AsReadOnly();
 
             public void Report(Message message)
             {
-                _rawMessages.Add(message);
-                _messages.Add(message.ToString());
+                rawMessages.Add(message);
+                messages.Add(message.ToString());
             }
         }
     }

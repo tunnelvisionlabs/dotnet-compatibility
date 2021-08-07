@@ -9,16 +9,16 @@
     internal class MethodMustNotBeChanged : CompatibilityDescriptor
     {
         private const string Id = nameof(MethodMustNotBeChanged);
-        private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "Publicly-accessible method '{0}' was changed or removed.";
-        private static readonly string _category = Categories.Method;
-        private static readonly Severity _defaultSeverity = Severity.Error;
-        private static readonly string _description = null;
+        private static new readonly string Title = TitleHelper.GenerateTitle(Id);
+        private static new readonly string MessageFormat = "Publicly-accessible method '{0}' was changed or removed.";
+        private static new readonly string Category = Categories.Method;
+        private static new readonly Severity DefaultSeverity = Severity.Error;
+        private static new readonly string Description = null;
 
-        private static readonly MethodMustNotBeChanged Instance = new MethodMustNotBeChanged();
+        private static readonly MethodMustNotBeChanged Instance = new ();
 
         private MethodMustNotBeChanged()
-            : base(Id, _title, _messageFormat, _category, _defaultSeverity, _description)
+            : base(Id, Title, MessageFormat, Category, DefaultSeverity, Description)
         {
         }
 

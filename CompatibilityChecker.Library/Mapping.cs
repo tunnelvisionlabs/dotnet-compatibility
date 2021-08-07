@@ -25,15 +25,18 @@
             CandidateReasons = candidateReasons;
         }
 
-        public ImmutableArray<THandle> CandidateTargets {
+        public ImmutableArray<THandle> CandidateTargets
+        {
             get;
         }
 
-        public ImmutableArray<string> CandidateReasons {
+        public ImmutableArray<string> CandidateReasons
+        {
             get;
         }
 
-        public THandle Target {
+        public THandle Target
+        {
             get;
         }
 
@@ -53,7 +56,9 @@
                 {
                     var builder = ImmutableArray.CreateBuilder<Handle>(mapping.CandidateTargets.Length);
                     foreach (var handle in mapping.CandidateTargets)
+                    {
                         builder.Add(ConvertToHandle(handle));
+                    }
                 }
             }
 
@@ -76,7 +81,9 @@
                 {
                     var builder = ImmutableArray.CreateBuilder<THandle>(mapping.CandidateTargets.Length);
                     foreach (var handle in mapping.CandidateTargets)
+                    {
                         builder.Add(ConvertToHandle<THandle>(handle));
+                    }
                 }
             }
 
@@ -86,7 +93,9 @@
         private static Handle ConvertToHandle(dynamic handle)
         {
             if (handle.IsNil)
+            {
                 return default(Handle);
+            }
 
             return (Handle)handle;
         }
@@ -94,7 +103,9 @@
         private static T ConvertToHandle<T>(dynamic handle)
         {
             if (handle.IsNil)
+            {
                 return default(T);
+            }
 
             return (T)handle;
         }

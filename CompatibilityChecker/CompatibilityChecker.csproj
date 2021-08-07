@@ -21,17 +21,31 @@ Diagnostics produced by this checker will be categorized by their likely impact 
     <Product>CompatibilityChecker</Product>
     <Authors>Rack Space Inc.,tunnelvisionlabs,EraYaN</Authors>
     <Company />
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.Reflection.Metadata" Version="5.0.0" />
-    <PackageReference Include="CompatibilityChecker.Library" Version="0.2.0" />
+    <PackageReference Include="CompatibilityChecker.Library" Version="0.3.0" Condition="'$(Configuration)'=='Release'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CompatibilityChecker.Library\CompatibilityChecker.Library.csproj" Condition="'$(Configuration)'=='Debug'" />
   </ItemGroup>
 
 </Project>

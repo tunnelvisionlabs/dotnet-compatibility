@@ -1,4 +1,4 @@
-﻿namespace CompatibilityChecker.Library
+namespace CompatibilityChecker.Library
 {
     using System;
     using System.Collections.Immutable;
@@ -10,39 +10,49 @@
     /// </summary>
     public struct MethodSignature
     {
-        private readonly BlobReader _reader;
+        private readonly BlobReader reader;
 
         public MethodSignature(BlobReader blobReader)
         {
-            _reader = blobReader;
+            reader = blobReader;
         }
 
-        public SignatureHeader Header {
-            get {
-                return _reader.ReadSignatureHeader();
+        public SignatureHeader Header
+        {
+            get
+            {
+                return reader.ReadSignatureHeader();
             }
         }
 
-        public int GenericParameterCount {
-            get {
-                BlobReader reader = _reader;
+        public int GenericParameterCount
+        {
+            get
+            {
+                var reader = this.reader;
                 var header = reader.ReadSignatureHeader();
 
                 if (header.IsGeneric)
+                {
                     return reader.ReadCompressedInteger();
+                }
 
                 throw new InvalidOperationException("Only generic method signatures include a generic parameter count.");
             }
         }
 
-        public ReturnTypeSignature ReturnType {
-            get {
-                BlobReader reader = _reader;
+        public ReturnTypeSignature ReturnType
+        {
+            get
+            {
+                var reader = this.reader;
                 var header = reader.ReadSignatureHeader();
 
                 // skip the GenParamCount if present
                 if (header.IsGeneric)
+                {
                     reader.ReadCompressedInteger();
+                }
 
                 // skip the ParamCount
                 reader.ReadCompressedInteger();
@@ -51,14 +61,18 @@
             }
         }
 
-        public ImmutableArray<ParameterSignature> Parameters {
-            get {
-                BlobReader reader = _reader;
+        public ImmutableArray<ParameterSignature> Parameters
+        {
+            get
+            {
+                var reader = this.reader;
                 var header = reader.ReadSignatureHeader();
 
                 // skip the GenParamCount if present
                 if (header.IsGeneric)
+                {
                     reader.ReadCompressedInteger();
+                }
 
                 // read the ParamCount
                 int parameterCount = reader.ReadCompressedInteger();
@@ -69,7 +83,7 @@
                 var builder = ImmutableArray.CreateBuilder<ParameterSignature>(parameterCount);
                 for (int i = 0; i < parameterCount; i++)
                 {
-                    ParameterSignature parameterSignature = new ParameterSignature(reader);
+                    ParameterSignature parameterSignature = new (reader);
                     builder.Add(parameterSignature);
                     reader = parameterSignature.Skip();
                 }
@@ -80,12 +94,14 @@
 
         public BlobReader Skip()
         {
-            BlobReader reader = _reader;
+            var reader = this.reader;
             var header = reader.ReadSignatureHeader();
 
             // skip the GenParamCount if present
             if (header.IsGeneric)
+            {
                 reader.ReadCompressedInteger();
+            }
 
             // read the ParamCount
             int parameterCount = reader.ReadCompressedInteger();
@@ -94,7 +110,9 @@
             reader = new ReturnTypeSignature(reader).Skip();
 
             for (int i = 0; i < parameterCount; i++)
+            {
                 reader = new ParameterSignature(reader).Skip();
+            }
 
             return reader;
         }

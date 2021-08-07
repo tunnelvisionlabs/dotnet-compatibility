@@ -9,16 +9,16 @@
     internal class MethodMustNotBeAddedToInterface : CompatibilityDescriptor
     {
         private const string Id = nameof(MethodMustNotBeAddedToInterface);
-        private static readonly string _title = TitleHelper.GenerateTitle(Id);
-        private static readonly string _messageFormat = "Method '{1}' was added to interface '{0}'.";
-        private static readonly string _category = Categories.Interface;
-        private static readonly Severity _defaultSeverity = Severity.Error;
-        private static readonly string _description = null;
+        private static new readonly string Title = TitleHelper.GenerateTitle(Id);
+        private static new readonly string MessageFormat = "Method '{1}' was added to interface '{0}'.";
+        private static new readonly string Category = Categories.Interface;
+        private static new readonly Severity DefaultSeverity = Severity.Error;
+        private static new readonly string Description = null;
 
-        private static readonly MethodMustNotBeAddedToInterface Instance = new MethodMustNotBeAddedToInterface();
+        private static readonly MethodMustNotBeAddedToInterface Instance = new ();
 
         private MethodMustNotBeAddedToInterface()
-            : base(Id, _title, _messageFormat, _category, _defaultSeverity, _description)
+            : base(Id, Title, MessageFormat, Category, DefaultSeverity, Description)
         {
         }
 
