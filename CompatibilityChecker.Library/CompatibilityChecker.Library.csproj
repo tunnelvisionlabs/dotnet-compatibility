@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <Description>This project implements a binary compatibility checker for .NET assemblies. The goal of this project is to automate the process of identifying binary- and source-breaking changes between releases of a .NET library. Libraries with string compatibility policies will eventually be able to incorporate this check in the unit tests for the library. The checker will download a declared previous release of the library from NuGet (or potentially from another source), and verify that the latest build of the library is compatible with the binary interfaces defined by the earlier release.
 
       This library may also feature support for higher levels of compatibility, such as warning users if new overloads of a method could result in an AmbiguousMatchException for users who didn't specify a complete signature when using reflection.
@@ -26,8 +26,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
-    <PackageReference Include="System.Reflection.Metadata" Version="5.0.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
+    <PackageReference Include="System.Reflection.Metadata" Version="6.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
 
