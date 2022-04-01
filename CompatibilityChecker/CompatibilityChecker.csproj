@@ -40,7 +40,7 @@ Diagnostics produced by this checker will be categorized by their likely impact 
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Reflection.Metadata" Version="6.0.0" />
+    <PackageReference Include="System.Reflection.Metadata" Version="6.0.1" />
     <PackageReference Include="CompatibilityChecker.Library" Version="0.4.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
