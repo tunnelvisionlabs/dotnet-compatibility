@@ -8,3 +8,16 @@ TestResults/
 *.sln.ide/
 *.user
 *.suo
+.vs/
+MigrationBackup/
+*.dll
+*.zip
+
+# IDEs
+.vscode
+.idea
+*.iml
+
+# MacOS
+.DS_Store
+packed/
